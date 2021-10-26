@@ -12,7 +12,7 @@ namespace TankDLL
         public int Y { get; set; }
         public int Speed { get; set; }
         public int[] Color { get; set; }
-
+        public int TankID { get; set; }
         public float Rotation { get; set; }
         public Tank()
         {

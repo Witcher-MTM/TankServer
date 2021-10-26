@@ -13,8 +13,7 @@ namespace TankServer
             Task.Factory.StartNew(() => server.Connects());
             while (true)
             {
-                if(server.clients.Count!=0)
-                server.GetInfo();
+               
             }
         }
     }

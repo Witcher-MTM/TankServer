@@ -39,9 +39,8 @@ namespace Client_Graphic
         protected override void Initialize()
         {
 
-            // TODO: Add your initialization logic here
-            client.Connect();
            
+            client.Connect();
             base.Initialize();
         }
 
@@ -49,9 +48,12 @@ namespace Client_Graphic
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank());
-            // TODO: use this.Content to load your game content here
+          
         }
+
+
         int check = 0;
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -65,6 +67,7 @@ namespace Client_Graphic
                 KeyPressed = true;
                 client.SendInfo(TankSprite.tank);
                
+
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A)&& KeyPressed == false)
             {
@@ -73,14 +76,7 @@ namespace Client_Graphic
                 TankSprite.tank.Rotation = -7.85f;
                 KeyPressed = true;
                 client.SendInfo(TankSprite.tank);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.S)&& KeyPressed == false)
-            {
-                check++;
-                TankSprite.tank.Y += TankSprite.tank.Speed;
-                TankSprite.tank.Rotation = 15.7f;
-                KeyPressed = true;
-                client.SendInfo(TankSprite.tank);
+
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
             {
@@ -89,7 +85,18 @@ namespace Client_Graphic
                 TankSprite.tank.Rotation = 7.85f;
                 KeyPressed = true;
                 client.SendInfo(TankSprite.tank);
+
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.S)&& KeyPressed == false)
+            {
+                check++;
+                TankSprite.tank.Y += TankSprite.tank.Speed;
+                TankSprite.tank.Rotation = 15.7f;
+                KeyPressed = true;
+                client.SendInfo(TankSprite.tank);
+
+            }
+           
             Window.Title = $"Send {check}";
             Thread.Sleep(10);
             KeyPressed = false;
@@ -109,14 +116,9 @@ namespace Client_Graphic
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             _spriteBatch.Begin();
-              _spriteBatch.Draw(TankSprite.texture, new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.texture.Width, TankSprite.texture.Height), null, Color.White, TankSprite.tank.Rotation, new Vector2(TankSprite.texture.Width / 2f, TankSprite.texture.Height / 2f), SpriteEffects.None, 0f);
-            
-           
-
+            _spriteBatch.Draw(TankSprite.texture, new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.texture.Width, TankSprite.texture.Height), null,new Color(TankSprite.tank.Color[0], TankSprite.tank.Color[1], TankSprite.tank.Color[2]), TankSprite.tank.Rotation, new Vector2(TankSprite.texture.Width / 2f, TankSprite.texture.Height / 2f), SpriteEffects.None, 0f);
             _spriteBatch.End();
-
             base.Draw(gameTime);
         }
     }
