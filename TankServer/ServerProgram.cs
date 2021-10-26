@@ -11,6 +11,7 @@ namespace TankServer
             server.StartServer();
             Console.WriteLine("Server started");
             Task.Factory.StartNew(() => server.Connects());
+            Task.Factory.StartNew(() => server.SendInfo());
             while (true)
             {
                

@@ -2,12 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using TankDLL;
 
 namespace Client_Graphic
 {
-    public class Sprite {
+    public class Sprite
+    {
 
 
         public Texture2D texture { get; set; }
@@ -25,8 +27,11 @@ namespace Client_Graphic
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Client client = new Client();
+        private List<Sprite> TankSpriteList;
         private Sprite TankSprite;
+
         private bool KeyPressed;
+        private List<Tank> tanks;
 
         public Game1()
         {
@@ -34,12 +39,15 @@ namespace Client_Graphic
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             KeyPressed = false;
+            this.tanks = new List<Tank>();
+            this.TankSpriteList = new List<Sprite>();
+
         }
 
         protected override void Initialize()
         {
 
-           
+
             client.Connect();
             base.Initialize();
         }
@@ -48,7 +56,7 @@ namespace Client_Graphic
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank());
-          
+
         }
 
 
@@ -56,20 +64,35 @@ namespace Client_Graphic
 
         protected override void Update(GameTime gameTime)
         {
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            Boost();
-            if (Keyboard.GetState().IsKeyDown(Keys.W)&& KeyPressed == false)
+            TankSpriteList.Clear();
+            Window.Title = $"Send {check}";
+           
+            try
+            {
+                tanks = JsonSerializer.Deserialize<List<Tank>>(client.GetInfo().ToString());
+            }
+            catch (System.Exception)
+            {
+            }
+
+            for (int i = 0; i < tanks.Count; i++)
+            {
+                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i]));
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
             {
                 check++;
                 TankSprite.tank.Y -= TankSprite.tank.Speed;
                 TankSprite.tank.Rotation = 0f;
                 KeyPressed = true;
                 client.SendInfo(TankSprite.tank);
-               
+
 
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.A)&& KeyPressed == false)
+            if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
             {
                 check++;
                 TankSprite.tank.X -= TankSprite.tank.Speed;
@@ -87,7 +110,7 @@ namespace Client_Graphic
                 client.SendInfo(TankSprite.tank);
 
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.S)&& KeyPressed == false)
+            if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
             {
                 check++;
                 TankSprite.tank.Y += TankSprite.tank.Speed;
@@ -96,9 +119,8 @@ namespace Client_Graphic
                 client.SendInfo(TankSprite.tank);
 
             }
-           
-            Window.Title = $"Send {check}";
-            Thread.Sleep(10);
+            Boost();
+            
             KeyPressed = false;
             base.Update(gameTime);
         }
@@ -117,7 +139,11 @@ namespace Client_Graphic
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
-            _spriteBatch.Draw(TankSprite.texture, new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.texture.Width, TankSprite.texture.Height), null,new Color(TankSprite.tank.Color[0], TankSprite.tank.Color[1], TankSprite.tank.Color[2]), TankSprite.tank.Rotation, new Vector2(TankSprite.texture.Width / 2f, TankSprite.texture.Height / 2f), SpriteEffects.None, 0f);
+            foreach (var item in TankSpriteList)
+            {
+                _spriteBatch.Draw(item.texture, new Rectangle(item.tank.X, item.tank.Y, item.texture.Width, item.texture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.texture.Width / 2f, item.texture.Height / 2f), SpriteEffects.None, 0f);
+
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
         }

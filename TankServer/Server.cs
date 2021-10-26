@@ -74,7 +74,7 @@ namespace TankServer
         {
             int user = 0;
             string json = String.Empty;
-            user = tanks.IndexOf(tanks.Last());
+            user = clients.Count - 1;
             while (true)
             {
                 try
@@ -121,6 +121,26 @@ namespace TankServer
                 }
             }
             return builder;
+        }
+        public void SendInfo()
+        {
+            string json = string.Empty;
+            while (true)
+            {
+                try
+                {
+                    json = JsonSerializer.Serialize<List<Tank>>(tanks);
+                    foreach (var item in clients)
+                    {
+                        item.socket.Send(Encoding.Unicode.GetBytes(json));
+                    }
+                    Thread.Sleep(10);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
         public void CheckConnect()
         {

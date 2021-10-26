@@ -40,6 +40,7 @@ namespace Client_Graphic
         }
         public bool SendInfo(Tank tank)
         {
+
             bool check = false;
             try
             {
@@ -53,6 +54,27 @@ namespace Client_Graphic
                 check = false;
             }
             return check;
+        }
+        public StringBuilder GetInfo()
+        {
+            byte[] data = new byte[1024];
+            int bytes = 0;
+            string json = String.Empty;
+            StringBuilder stringBuilder = new StringBuilder();
+            try
+            {
+                do
+                {
+                    bytes = socket.Receive(data);
+                    stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+
+                } while (socket.Available > 0);
+            }
+            catch (Exception ex) {
+            
+            }
+
+            return stringBuilder;
         }
     }
 }
