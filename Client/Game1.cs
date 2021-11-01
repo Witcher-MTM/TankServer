@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
 using TankDLL;
 
 namespace Client_Graphic
@@ -12,13 +14,17 @@ namespace Client_Graphic
     {
 
 
-        public Texture2D texture { get; set; }
+        public Texture2D TankTexture { get; set; }
+        public Texture2D BulletTexture { get; set; }
         public Tank tank { get; set; }
-        public Sprite(Texture2D texture, Tank tank)
+        public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet)
         {
-            this.texture = texture;
+            this.TankTexture = textureT;
             this.tank = tank;
+            this.BulletTexture = textureB;
+            this.tank.bullet = bullet;
         }
+
 
     }
 
@@ -29,9 +35,10 @@ namespace Client_Graphic
         private Client client = new Client();
         private List<Sprite> TankSpriteList;
         private Sprite TankSprite;
-
+        private Sprite BulletSprite;
         private bool KeyPressed;
         private List<Tank> tanks;
+        private bool checkIntersectBullet = false;
 
         public Game1()
         {
@@ -46,8 +53,6 @@ namespace Client_Graphic
 
         protected override void Initialize()
         {
-
-
             client.Connect();
             base.Initialize();
         }
@@ -55,8 +60,8 @@ namespace Client_Graphic
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank());
-
+            TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
+            client.SendInfo(TankSprite.tank);
         }
 
 
@@ -64,12 +69,12 @@ namespace Client_Graphic
 
         protected override void Update(GameTime gameTime)
         {
-            
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             TankSpriteList.Clear();
             Window.Title = $"Send {check}";
-           
+
             try
             {
                 tanks = JsonSerializer.Deserialize<List<Tank>>(client.GetInfo().ToString());
@@ -80,47 +85,125 @@ namespace Client_Graphic
 
             for (int i = 0; i < tanks.Count; i++)
             {
-                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i]));
+                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
             }
+
             if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
             {
                 check++;
-                TankSprite.tank.Y -= TankSprite.tank.Speed;
                 TankSprite.tank.Rotation = 0f;
-                KeyPressed = true;
-                client.SendInfo(TankSprite.tank);
-
-
+                if (TankSprite.tank.Y - (TankSprite.tank.Speed + TankSprite.TankTexture.Height/2) > 0)
+                {
+                    TankSprite.tank.Y -= TankSprite.tank.Speed;
+                    KeyPressed = true;
+                    client.SendInfo(TankSprite.tank);
+                }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
             {
                 check++;
-                TankSprite.tank.X -= TankSprite.tank.Speed;
                 TankSprite.tank.Rotation = -7.85f;
-                KeyPressed = true;
+                if (TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.TankTexture.Hei/2) > 0) {
+                    TankSprite.tank.X -= TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
                 client.SendInfo(TankSprite.tank);
-
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
             {
                 check++;
-                TankSprite.tank.X += TankSprite.tank.Speed;
                 TankSprite.tank.Rotation = 7.85f;
-                KeyPressed = true;
+                if (TankSprite.tank.X+(TankSprite.tank.Speed + TankSprite.TankTexture.Height/2) <_graphics.PreferredBackBufferWidth)
+                {
+                    TankSprite.tank.X += TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
                 client.SendInfo(TankSprite.tank);
-
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
             {
                 check++;
-                TankSprite.tank.Y += TankSprite.tank.Speed;
                 TankSprite.tank.Rotation = 15.7f;
-                KeyPressed = true;
+                if (TankSprite.tank.Y+(TankSprite.tank.Speed+TankSprite.TankTexture.Height/2) <= _graphics.PreferredBackBufferHeight)
+                {
+                    TankSprite.tank.Y += TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
                 client.SendInfo(TankSprite.tank);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
+                TankSprite.tank.bullet.CoordX = TankSprite.tank.X;
+                TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
 
+                Task.Factory.StartNew(() =>
+                {
+
+                    if (TankSprite.tank.Rotation == 0f)
+                    {
+                        while (TankSprite.tank.bullet.CoordY > 0)
+                        {
+                            Thread.Sleep(10);
+                            TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
+                            client.SendInfo(TankSprite.tank);
+                            if (BulletCollision())
+                            {
+                                break;
+                            }
+                        }
+
+                    }
+                    else if (TankSprite.tank.Rotation == 15.7f)
+                    {
+                        while (TankSprite.tank.bullet.CoordY < _graphics.PreferredBackBufferHeight)
+                        {
+                            Thread.Sleep(10);
+                            TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
+                            client.SendInfo(TankSprite.tank);
+                            if (BulletCollision())
+                            {
+                                break;
+                            }
+                        }
+
+                    }
+
+                    else if (TankSprite.tank.Rotation == -7.85f)
+                    {
+                        while (TankSprite.tank.bullet.CoordX > 0)
+                        {
+                            Thread.Sleep(10);
+                            TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
+                            client.SendInfo(TankSprite.tank);
+                            if (BulletCollision())
+                            {
+                                
+                                break;
+                            }
+                        }
+
+                    }
+                    else if (TankSprite.tank.Rotation == 7.85f)
+                    {
+                        while (TankSprite.tank.bullet.CoordX < _graphics.PreferredBackBufferWidth)
+                        {
+                            Thread.Sleep(10);
+                            TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
+                            client.SendInfo(TankSprite.tank);
+                            if (BulletCollision())
+                            {
+                                break;
+                            }
+                        }
+
+                    }
+
+                   
+                });
             }
             Boost();
-            
+
             KeyPressed = false;
             base.Update(gameTime);
         }
@@ -135,17 +218,39 @@ namespace Client_Graphic
                 TankSprite.tank.Speed = 3;
             }
         }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
             foreach (var item in TankSpriteList)
             {
-                _spriteBatch.Draw(item.texture, new Rectangle(item.tank.X, item.tank.Y, item.texture.Width, item.texture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.texture.Width / 2f, item.texture.Height / 2f), SpriteEffects.None, 0f);
+                _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.TankTexture.Width / 2f, item.TankTexture.Height / 2f), SpriteEffects.None, 0f);
+                _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
 
             }
             _spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+
+        private bool BulletCollision()
+        {
+            Rectangle bullet = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
+
+            foreach (var item in TankSpriteList)
+            {
+                if (item.tank.X != TankSprite.tank.X && item.tank.Y != TankSprite.tank.Y)
+                {
+                    if (bullet.Intersects(new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height)))
+                    {
+                        item.tank.HP -= item.tank.bullet.Damage;
+                       
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

@@ -8,15 +8,19 @@ namespace TankDLL
 {
     public class Tank
     {
+        public int HP { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Speed { get; set; }
         public int[] Color { get; set; }
         public int TankID { get; set; }
         public float Rotation { get; set; }
+        public Bullet bullet { get; set; }
         public Tank()
         {
             Random r = new Random();
+            HP = 100;
+            bullet = new Bullet();
             X = 300;
             Y = 300;
             Speed = 3;
