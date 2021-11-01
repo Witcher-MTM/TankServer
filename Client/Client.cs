@@ -70,7 +70,7 @@ namespace Client_Graphic
 
                 } while (socket.Available > 0);
             }
-            catch (Exception ex) {
+            catch (Exception) {
             
             }
 

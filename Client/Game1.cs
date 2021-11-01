@@ -35,10 +35,9 @@ namespace Client_Graphic
         private Client client = new Client();
         private List<Sprite> TankSpriteList;
         private Sprite TankSprite;
-        private Sprite BulletSprite;
         private bool KeyPressed;
         private List<Tank> tanks;
-        private bool checkIntersectBullet = false;
+      
 
         public Game1()
         {
@@ -103,7 +102,7 @@ namespace Client_Graphic
             {
                 check++;
                 TankSprite.tank.Rotation = -7.85f;
-                if (TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.TankTexture.Hei/2) > 0) {
+                if (TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.TankTexture.Height/2) > 0) {
                     TankSprite.tank.X -= TankSprite.tank.Speed;
                     KeyPressed = true;
                 }
