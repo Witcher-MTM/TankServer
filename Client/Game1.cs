@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using TankDLL;
 
+
 namespace Client_Graphic
 {
     public class Sprite
@@ -155,7 +156,7 @@ namespace Client_Graphic
         }
         private void Shoot()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space)&&TankSprite.tank.CD == 0)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space)&&TankSprite.tank.CD <= 0)
             {
                 TankSprite.tank.CD = 80;
                 TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
@@ -167,9 +168,11 @@ namespace Client_Graphic
 
                     if (TankSprite.tank.Rotation == 0f)
                     {
+                       
                         while (TankSprite.tank.bullet.CoordY > 0)
                         {
-                            Thread.Sleep(10);
+                            Thread.Sleep(20);
+                           
                             TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
                             client.SendInfo(TankSprite.tank);
 
@@ -184,9 +187,11 @@ namespace Client_Graphic
                     }
                     else if (TankSprite.tank.Rotation == 15.7f)
                     {
+                       
                         while (TankSprite.tank.bullet.CoordY < _graphics.PreferredBackBufferHeight)
                         {
-                            Thread.Sleep(10);
+                            Thread.Sleep(20);
+                           
                             TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
                             client.SendInfo(TankSprite.tank);
                             if (BulletCollision())
@@ -202,9 +207,11 @@ namespace Client_Graphic
 
                     else if (TankSprite.tank.Rotation == -7.85f)
                     {
+                        
                         while (TankSprite.tank.bullet.CoordX > 0)
                         {
-                            Thread.Sleep(10);
+                            Thread.Sleep(20);
+                           
                             TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
                             client.SendInfo(TankSprite.tank);
                             if (BulletCollision())
@@ -220,9 +227,11 @@ namespace Client_Graphic
                     }
                     else if (TankSprite.tank.Rotation == 7.85f)
                     {
+                       
                         while (TankSprite.tank.bullet.CoordX < _graphics.PreferredBackBufferWidth)
                         {
-                            Thread.Sleep(10);
+                            Thread.Sleep(20);
+                           
                             TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
                             client.SendInfo(TankSprite.tank);
                             if (BulletCollision())
@@ -237,6 +246,7 @@ namespace Client_Graphic
 
 
                 });
+
             }
         }
         protected override void Draw(GameTime gameTime)
@@ -261,22 +271,20 @@ namespace Client_Graphic
 
         private bool BulletCollision()
         {
-            Rectangle bullet = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
-
-            foreach (var item in TankSpriteList)
+            Rectangle tank_for_intersect = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+            for (int i = 0; i < TankSpriteList.Count; i++)
             {
-                if (item.tank.X != TankSprite.tank.X && item.tank.Y != TankSprite.tank.Y)
+                if (tank_for_intersect.Intersects(new Rectangle(TankSpriteList[i].tank.bullet.CoordX, TankSpriteList[i].tank.bullet.CoordY, 20, 20)))
                 {
-                   
-                    if (bullet.Intersects(new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height)))
-                    {
-                        item.tank.HP -= item.tank.bullet.Damage;
-                        item.tank.bullet.CoordX = -10;
-                        item.tank.bullet.CoordY = -10;
-                        return true;
-                    }
+                    TankSprite.tank.HP -= TankSpriteList[i].tank.bullet.Damage;
+                    TankSpriteList[i].tank.bullet.CoordX = -10;
+                    TankSpriteList[i].tank.bullet.CoordY = -10;
+                    client.SendInfo(TankSprite.tank);
                 }
             }
+            
+
+            
             return false;
         }
         private bool CoulDown()
