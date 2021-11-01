@@ -17,8 +17,8 @@ namespace TankDLL
         {
             this.Damage = 25;
             this.Speed = 10;
-            this.CoordX = 0;
-            this.CoordY = 0;
+            this.CoordX = -10;
+            this.CoordY = -10;
             this.Rotation = 0;
 
         }

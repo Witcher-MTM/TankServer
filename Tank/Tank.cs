@@ -15,6 +15,7 @@ namespace TankDLL
         public int[] Color { get; set; }
         public int TankID { get; set; }
         public float Rotation { get; set; }
+        public int CD { get; set; }
         public Bullet bullet { get; set; }
         public Tank()
         {
@@ -26,6 +27,7 @@ namespace TankDLL
             Speed = 3;
             Color = new int[] { r.Next(50, 256), r.Next(50, 256), r.Next(50, 256) };
             Rotation = 0f;
+            CD = 0;
         }
 
         public Tank(int x, int y, int speed, int[] color, int rotation)
