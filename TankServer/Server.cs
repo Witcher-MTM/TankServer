@@ -61,6 +61,7 @@ namespace TankServer
                 this.Client_ID++;
                 clients[clients.Count - 1].ID = this.Client_ID;
                 tanks.Add(new Tank());
+                tanks.Last().TankID++;
 
                 tasks.Add(new Task(() => GetInfo()));
 
@@ -75,6 +76,10 @@ namespace TankServer
             int user = 0;
             string json = String.Empty;
             user = clients.Count - 1;
+            if(user>= clients.Count)
+            {
+                user--;
+            }
             while (clients[user].socket.Connected)
             {
                 try

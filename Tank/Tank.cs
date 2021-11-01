@@ -28,6 +28,7 @@ namespace TankDLL
             Color = new int[] { r.Next(50, 256), r.Next(50, 256), r.Next(50, 256) };
             Rotation = 0f;
             CD = 0;
+            TankID = 0;
         }
 
         public Tank(int x, int y, int speed, int[] color, int rotation)

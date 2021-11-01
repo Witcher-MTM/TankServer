@@ -61,6 +61,7 @@ namespace Client_Graphic
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
+           
             client.SendInfo(TankSprite.tank);
         }
 
@@ -86,6 +87,7 @@ namespace Client_Graphic
             for (int i = 0; i < tanks.Count; i++)
             {
                 TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
+
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
@@ -98,7 +100,7 @@ namespace Client_Graphic
                     KeyPressed = true;
                    
                 }
-                
+                client.SendInfo(TankSprite.tank);
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
@@ -111,7 +113,7 @@ namespace Client_Graphic
                     KeyPressed = true;
                    
                 }
-             
+                client.SendInfo(TankSprite.tank);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
             {
@@ -123,7 +125,7 @@ namespace Client_Graphic
                     KeyPressed = true;
                     
                 }
-               
+                client.SendInfo(TankSprite.tank);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
             {
@@ -135,7 +137,8 @@ namespace Client_Graphic
                     KeyPressed = true;
                     
                 }
-                
+                client.SendInfo(TankSprite.tank);
+
             }
            
             Boost();
@@ -143,7 +146,7 @@ namespace Client_Graphic
             BulletMove();
             KeyPressed = false;
             base.Update(gameTime);
-            client.SendInfo(TankSprite.tank);
+           
         }
 
 
@@ -192,21 +195,6 @@ namespace Client_Graphic
             
             return false;
         }
-        private bool CoulDown()
-        {
-            bool check = false;
-            if (TankSprite.tank.CD > 0)
-            {
-                TankSprite.tank.CD--;
-                check = false;
-            }
-            else
-            {
-                check = true;
-            }
-            return check;
-            
-        }
         private void Boost()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
@@ -220,12 +208,29 @@ namespace Client_Graphic
         }
         private void BulletMove()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (Keyboard.GetState().IsKeyDown(Keys.Space)&&TankSprite.tank.CD==0)
             {
                 TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
                 TankSprite.tank.bullet.CoordX = TankSprite.tank.X;
                 TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
+                if(TankSprite.tank.bullet.Rotation == 0f)
+                {
+                    TankSprite.tank.bullet.CoordY -= 50;
+                }
+                else if(TankSprite.tank.bullet.Rotation == 15.7f)
+                {
+                    TankSprite.tank.bullet.CoordY += 50;
+                }
+                else if (TankSprite.tank.bullet.Rotation == -7.85f)
+                {
+                    TankSprite.tank.bullet.CoordX -= 50;
+                }
+                else if (TankSprite.tank.bullet.Rotation == 7.85f)
+                {
+                    TankSprite.tank.bullet.CoordX += 50;
+                }
                 TankSprite.tank.bullet.IsActive = true;
+                TankSprite.tank.CD = 120;
             }
             if (TankSprite.tank.bullet.IsActive)
             {
@@ -237,6 +242,7 @@ namespace Client_Graphic
                     }
                     else
                         TankSprite.tank.bullet.IsActive = false;
+                    
                 }
                 else if (TankSprite.tank.bullet.Rotation == 15.7f)
                 {
@@ -246,8 +252,9 @@ namespace Client_Graphic
                     }
                     else
                         TankSprite.tank.bullet.IsActive = false;
+                   
                 }
-                else if (TankSprite.tank.bullet.Rotation == - 7.85f)
+                else if (TankSprite.tank.bullet.Rotation == -7.85f)
                 {
                     if (TankSprite.tank.bullet.CoordX >= -10 && !BulletCollision())
                     {
@@ -255,6 +262,7 @@ namespace Client_Graphic
                     }
                     else
                         TankSprite.tank.bullet.IsActive = false;
+                   
                 }
                 else if (TankSprite.tank.bullet.Rotation == 7.85f)
                 {
@@ -264,8 +272,15 @@ namespace Client_Graphic
                     }
                     else
                         TankSprite.tank.bullet.IsActive = false;
+                   
                 }
+                client.SendInfo(TankSprite.tank);
             }
+            if (TankSprite.tank.CD > 0)
+            {
+                TankSprite.tank.CD--;
+            }
+          
         }
     }
 }
