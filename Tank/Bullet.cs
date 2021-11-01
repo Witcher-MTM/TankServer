@@ -13,6 +13,7 @@ namespace TankDLL
         public int CoordX { get; set; }
         public int CoordY { get; set; }
         public float Rotation { get; set; }
+        public bool IsActive { get; set; }
         public Bullet()
         {
             this.Damage = 25;
@@ -20,6 +21,7 @@ namespace TankDLL
             this.CoordX = -10;
             this.CoordY = -10;
             this.Rotation = 0;
+            this.IsActive = false;
 
         }
 

@@ -98,7 +98,7 @@ namespace Client_Graphic
                     KeyPressed = true;
                    
                 }
-                client.SendInfo(TankSprite.tank);
+                
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
@@ -111,8 +111,7 @@ namespace Client_Graphic
                     KeyPressed = true;
                    
                 }
-                client.SendInfo(TankSprite.tank);
-
+             
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
             {
@@ -124,7 +123,7 @@ namespace Client_Graphic
                     KeyPressed = true;
                     
                 }
-                client.SendInfo(TankSprite.tank);
+               
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
             {
@@ -136,21 +135,17 @@ namespace Client_Graphic
                     KeyPressed = true;
                     
                 }
-                client.SendInfo(TankSprite.tank);
+                
             }
-            Shoot();
+           
             Boost();
 
-            Task.Factory.StartNew(() => {
-                while (CoulDown())
-                {
-                    Thread.Sleep(20);
-                }
-            });
-            
+            BulletMove();
             KeyPressed = false;
             base.Update(gameTime);
+            client.SendInfo(TankSprite.tank);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -223,95 +218,53 @@ namespace Client_Graphic
                 TankSprite.tank.Speed = 3;
             }
         }
-        private void Shoot()
+        private void BulletMove()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) && TankSprite.tank.CD <= 0)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                TankSprite.tank.CD = 80;
                 TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
                 TankSprite.tank.bullet.CoordX = TankSprite.tank.X;
                 TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
-
-                Task.Factory.StartNew(() =>
+                TankSprite.tank.bullet.IsActive = true;
+            }
+            if (TankSprite.tank.bullet.IsActive)
+            {
+                if (TankSprite.tank.bullet.Rotation == 0f)
                 {
-                    Thread.Sleep(20);
-                    if (TankSprite.tank.Rotation == 0f)
+                    if (TankSprite.tank.bullet.CoordY >= -10 && !BulletCollision())
                     {
-
-                        while (TankSprite.tank.bullet.CoordY > 0)
-                        {
-                           
-
-                            TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
-                            client.SendInfo(TankSprite.tank);
-
-                            if (BulletCollision())
-                            {
-                                break;
-                            }
-                        }
-                        TankSprite.tank.bullet.CoordX = -10;
-                        TankSprite.tank.bullet.CoordY = -10;
-                        client.SendInfo(TankSprite.tank);
+                        TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
                     }
-                    else if (TankSprite.tank.Rotation == 15.7f)
+                    else
+                        TankSprite.tank.bullet.IsActive = false;
+                }
+                else if (TankSprite.tank.bullet.Rotation == 15.7f)
+                {
+                    if (TankSprite.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10 && !BulletCollision())
                     {
-
-                        while (TankSprite.tank.bullet.CoordY < _graphics.PreferredBackBufferHeight)
-                        {
-                           
-
-                            TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
-                            client.SendInfo(TankSprite.tank);
-                            if (BulletCollision())
-                            {
-                                break;
-                            }
-                        }
-                       
-                        client.SendInfo(TankSprite.tank);
-
+                        TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
                     }
-
-                    else if (TankSprite.tank.Rotation == -7.85f)
+                    else
+                        TankSprite.tank.bullet.IsActive = false;
+                }
+                else if (TankSprite.tank.bullet.Rotation == - 7.85f)
+                {
+                    if (TankSprite.tank.bullet.CoordX >= -10 && !BulletCollision())
                     {
-
-                        while (TankSprite.tank.bullet.CoordX > 0)
-                        {
-                           
-
-                            TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
-                            client.SendInfo(TankSprite.tank);
-                            if (BulletCollision())
-                            {
-
-                                break;
-                            }
-
-                        }
-                        TankSprite.tank.bullet.CoordX = -10;
-                        TankSprite.tank.bullet.CoordY = -10;
-                        client.SendInfo(TankSprite.tank);
+                        TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
                     }
-                    else if (TankSprite.tank.Rotation == 7.85f)
+                    else
+                        TankSprite.tank.bullet.IsActive = false;
+                }
+                else if (TankSprite.tank.bullet.Rotation == 7.85f)
+                {
+                    if (TankSprite.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10 && !BulletCollision())
                     {
-                        while (TankSprite.tank.bullet.CoordX  < _graphics.PreferredBackBufferWidth)
-                        {
-                            
-                            TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
-                            client.SendInfo(TankSprite.tank);
-                            if (BulletCollision())
-                            {
-                                break;
-                            }
-                        }
-                       
-                        client.SendInfo(TankSprite.tank);
+                        TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
                     }
-                    
-
-                });
-
+                    else
+                        TankSprite.tank.bullet.IsActive = false;
+                }
             }
         }
     }
