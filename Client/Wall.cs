@@ -11,7 +11,8 @@ namespace Client_Graphic
 
         public Wall()
         {
-
+            CoordX = 0;
+            CoordY = 0;
         }
     }
 }

@@ -18,12 +18,17 @@ namespace Client_Graphic
         public Texture2D TankTexture { get; set; }
         public Texture2D BulletTexture { get; set; }
         public Tank tank { get; set; }
+       
         public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet)
         {
             this.TankTexture = textureT;
             this.tank = tank;
             this.BulletTexture = textureB;
             this.tank.bullet = bullet;
+        }
+        public Sprite(Texture2D mapTexture,Wall map)
+        {
+        
         }
 
 
@@ -61,7 +66,6 @@ namespace Client_Graphic
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
-           
             client.SendInfo(TankSprite.tank);
         }
 
@@ -157,13 +161,7 @@ namespace Client_Graphic
             foreach (var item in TankSpriteList)
             {
                 _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.TankTexture.Width / 2f, item.TankTexture.Height / 2f), SpriteEffects.None, 0f);
-                
-              
               _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
-
-                
-                
-
             }
             _spriteBatch.End();
             base.Draw(gameTime);
