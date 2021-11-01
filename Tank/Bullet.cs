@@ -16,7 +16,7 @@ namespace TankDLL
         public Bullet()
         {
             this.Damage = 25;
-            this.Speed = 10;
+            this.Speed = 5;
             this.CoordX = -10;
             this.CoordY = -10;
             this.Rotation = 0;

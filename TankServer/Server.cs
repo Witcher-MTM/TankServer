@@ -46,7 +46,7 @@ namespace TankServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Start", ex.Message);
                
             }
 
@@ -70,23 +70,31 @@ namespace TankServer
                 Console.WriteLine("New task for new player started");
             }
         }
-        public StringBuilder GetInfo()
+        public void GetInfo()
         {
             int user = 0;
             string json = String.Empty;
             user = clients.Count - 1;
-            while (true)
+            while (clients[user].socket.Connected)
             {
                 try
                 {
-                    json = GetInfo(user).ToString();
-                    tanks[user] = JsonSerializer.Deserialize<Tank>(json);
+                    if (clients[user].socket.Connected)
+                    {
+                        json = GetInfo(user).ToString();
+                        tanks[user] = JsonSerializer.Deserialize<Tank>(json);
+                    }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine(ex.Message);
                 }
             }
+            Console.WriteLine($"User {clients[user].socket.RemoteEndPoint.ToString()} disconnect");
+            clients.RemoveAt(user);
+            tanks.RemoveAt(user);
+           
+            
+
         }
       
         public StringBuilder GetInfo(int user)
@@ -100,8 +108,12 @@ namespace TankServer
                 {
                     try
                     {
-                        bytes = clients[user].socket.Receive(data, data.Length, 0);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        if (clients[user].socket.Connected)
+                        {
+                            bytes = clients[user].socket.Receive(data, data.Length, 0);
+                            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                        }
+                        
                     }
                     catch (Exception)
                     {
@@ -129,27 +141,21 @@ namespace TankServer
             {
                 try
                 {
+                    
                     json = JsonSerializer.Serialize<List<Tank>>(tanks);
                     foreach (var item in clients)
                     {
-                        item.socket.Send(Encoding.Unicode.GetBytes(json));
+                        if (item.socket.Connected)
+                        {
+                            item.socket.Send(Encoding.Unicode.GetBytes(json));
+                        }
+                       
                     }
                     Thread.Sleep(10);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-        }
-        public void CheckConnect()
-        {
-            for (int i = 0; i < clients.Count; i++)
-            {
-                if (!clients[i].socket.Connected)
-                {
-                    clients.RemoveAt(i);
-                    Console.WriteLine("User disconnect");
+                    Console.WriteLine("[SEND]", ex.Message);
                 }
             }
         }

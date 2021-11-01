@@ -38,5 +38,6 @@ namespace TankDLL
             Color = color;
             Rotation = rotation;
         }
+       
     }
 }
