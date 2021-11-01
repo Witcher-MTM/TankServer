@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 namespace Client_Graphic
 {
     public class Wall
     {
-        public int CoordX { get; set; }
-        public int CoordY { get; set; }
+        public bool IsActive { set; get; }
+        public Rectangle rec { set; get; }
 
-        public Wall()
+        public Wall(Rectangle rect, bool active)
         {
-            CoordX = 0;
-            CoordY = 0;
+            rec = rect;
+
+            IsActive = active;
         }
     }
 }
