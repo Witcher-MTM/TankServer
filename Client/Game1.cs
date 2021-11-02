@@ -360,12 +360,12 @@ namespace Client_Graphic
 
         private bool TankInterTank()
         {
-            tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+           
             foreach (var item in TankSpriteList)
             {
                 if (item.tank.TankID != TankSprite.tank.TankID)
                 {
-                    if (tank.Intersects(new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height)))
+                    if (CheckDirectionTank().Intersects(new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height)))
                     {
                         return false;
                     }
@@ -404,18 +404,18 @@ namespace Client_Graphic
                     }
                 case Direction.DOWN:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - TankSprite.TankTexture.Height / 2, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y , TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
                         break;
                     }
                 case Direction.LEFT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X - 20, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - 20, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
                         break;
                     }
                 case Direction.RIGHT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
-                        break;
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y -20, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+                        break; 
                     }
                 default:
                     break;
