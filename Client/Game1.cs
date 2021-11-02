@@ -265,7 +265,7 @@ namespace Client_Graphic
         }
         private void BulletMove()
         {
-            BulletInterMap();
+            BulletInter();
             if (Keyboard.GetState().IsKeyDown(Keys.Space)&&TankSprite.tank.CD==0)
             {
                 TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
@@ -336,7 +336,7 @@ namespace Client_Graphic
                 }
             }
         }
-        private void BulletInterMap()
+        private void BulletInter()
         {
 
             bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
@@ -356,6 +356,27 @@ namespace Client_Graphic
                     }
                 }
             }
+            foreach (var item in tanks)
+            {
+                try
+                {
+                    if (bullet_rectangle.Intersects(new Rectangle(item.X,item.Y,TankSprite.TankTexture.Width,TankSprite.TankTexture.Height)))
+                    {
+                        item.HP -= TankSprite.tank.bullet.Damage;
+                       
+                        TankSprite.tank.bullet.CoordX = 2021;
+                        TankSprite.tank.bullet.CoordY = 2021;
+                        TankSprite.tank.bullet.IsActive = false;
+                       
+                        client.SendInfo(TankSprite.tank);
+                    }
+                }
+                catch (System.Exception)
+                {
+                }
+            }
+
+           
         }
 
         private bool TankInterTank()
@@ -404,17 +425,17 @@ namespace Client_Graphic
                     }
                 case Direction.DOWN:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y , TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + TankSprite.tank.Speed, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
                         break;
                     }
                 case Direction.LEFT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - 20, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+                        tank = new Rectangle(TankSprite.tank.X - (TankSprite.tank.Speed+TankSprite.TankTexture.Width/2), TankSprite.tank.Y - 20, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
                         break;
                     }
                 case Direction.RIGHT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y -20, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+                        tank = new Rectangle(TankSprite.tank.X + TankSprite.tank.Speed, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
                         break; 
                     }
                 default:
