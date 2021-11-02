@@ -228,30 +228,6 @@ namespace Client_Graphic
             base.Draw(gameTime);
         }
 
-
-        private bool BulletCollision()
-        {
-            Rectangle tank_for_intersect = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
-            for (int i = 0; i < TankSpriteList.Count; i++)
-            {
-               
-                try
-                {
-                    //tank_for_intersect.Intersects(new Rectangle(TankSpriteList[i].tank.bullet.CoordX, TankSpriteList[i].tank.bullet.CoordY, 20, 20))
-                    if (TankSprite.TankTexture.Width+TankSprite.tank.Speed == TankSpriteList[i].tank.bullet.CoordX&&TankSprite.TankTexture.Height+TankSprite.tank.Speed == TankSpriteList[i].tank.bullet.CoordY)
-                    {
-                        TankSprite.tank.HP -= TankSpriteList[i].tank.bullet.Damage;
-                        TankSpriteList[i].tank.bullet.CoordX = 2021;
-                        TankSpriteList[i].tank.bullet.CoordY = 2021;
-                        client.SendInfo(TankSprite.tank);
-                    }
-                }
-                catch (System.Exception)
-                {
-                }
-            }
-            return false;
-        }
         private void Boost()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
@@ -279,7 +255,7 @@ namespace Client_Graphic
             {
                 if (TankSprite.tank.bullet.Rotation == 0f)
                 {
-                    if (TankSprite.tank.bullet.CoordY >= -10 && !BulletCollision())
+                    if (TankSprite.tank.bullet.CoordY >= -10)
                     {
                         TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
                     }
@@ -289,7 +265,7 @@ namespace Client_Graphic
                 }
                 else if (TankSprite.tank.bullet.Rotation == 15.7f)
                 {
-                    if (TankSprite.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10 && !BulletCollision())
+                    if (TankSprite.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10)
                     {
                         TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
                     }
@@ -299,7 +275,7 @@ namespace Client_Graphic
                 }
                 else if (TankSprite.tank.bullet.Rotation == -7.85f)
                 {
-                    if (TankSprite.tank.bullet.CoordX >= -10 && !BulletCollision())
+                    if (TankSprite.tank.bullet.CoordX >= -10)
                     {
                         TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
                     }
@@ -309,7 +285,7 @@ namespace Client_Graphic
                 }
                 else if (TankSprite.tank.bullet.Rotation == 7.85f)
                 {
-                    if (TankSprite.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10 && !BulletCollision())
+                    if (TankSprite.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10)
                     {
                         TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
                     }
@@ -356,18 +332,14 @@ namespace Client_Graphic
                     }
                 }
             }
-            foreach (var item in tanks)
+           
+            foreach (var item in TankSpriteList)
             {
                 try
                 {
-                    if (bullet_rectangle.Intersects(new Rectangle(item.X,item.Y,TankSprite.TankTexture.Width,TankSprite.TankTexture.Height)))
+                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX,item.tank.bullet.CoordY,20,20)))
                     {
-                        item.HP -= TankSprite.tank.bullet.Damage;
-                       
-                        TankSprite.tank.bullet.CoordX = 2021;
-                        TankSprite.tank.bullet.CoordY = 2021;
-                        TankSprite.tank.bullet.IsActive = false;
-                       
+                        TankSprite.tank.HP -= item.tank.bullet.Damage;
                         client.SendInfo(TankSprite.tank);
                     }
                 }
@@ -375,8 +347,17 @@ namespace Client_Graphic
                 {
                 }
             }
+            foreach (var item_2 in tanks)
+            {
+                if (bullet_rectangle.Intersects(new Rectangle(item_2.X, item_2.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height)))
+                {
+                    TankSprite.tank.bullet.CoordX = 2021;
+                    TankSprite.tank.bullet.CoordY = 2021;
+                    TankSprite.tank.bullet.IsActive = false;
+                    client.SendInfo(TankSprite.tank);
+                }
+            }
 
-           
         }
 
         private bool TankInterTank()
