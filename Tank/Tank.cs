@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace TankDLL
 {
+    public enum Direction
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
     public class Tank
     {
+      
         public int HP { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
@@ -17,6 +25,7 @@ namespace TankDLL
         public float Rotation { get; set; }
         public int CD { get; set; }
         public Bullet bullet { get; set; }
+        public Direction tankDirection { get; set; }
         public Tank()
         {
             Random r = new Random();
@@ -29,6 +38,7 @@ namespace TankDLL
             Rotation = 0f;
             CD = 0;
             TankID = 0;
+            tankDirection = Direction.UP;
         }
 
         public Tank(int x, int y, int speed, int[] color, int rotation)
