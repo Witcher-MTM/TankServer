@@ -203,6 +203,7 @@ namespace Client_Graphic
                 }
             }
             BulletMove();
+           
             KeyPressed = false;
             base.Update(gameTime);
            
@@ -337,11 +338,16 @@ namespace Client_Graphic
             {
                 try
                 {
-                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX,item.tank.bullet.CoordY,20,20)))
+                    if(TankSprite.tank.TankID != item.tank.TankID)
                     {
-                        TankSprite.tank.HP -= item.tank.bullet.Damage;
-                        client.SendInfo(TankSprite.tank);
+                        if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
+                        {
+                            TankSprite.tank.HP -= item.tank.bullet.Damage;
+                            CheckStatus();
+                            client.SendInfo(TankSprite.tank);
+                        }
                     }
+                   
                 }
                 catch (System.Exception)
                 {
@@ -349,13 +355,17 @@ namespace Client_Graphic
             }
             foreach (var item_2 in tanks)
             {
-                if (bullet_rectangle.Intersects(new Rectangle(item_2.X, item_2.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height)))
+                if(TankSprite.tank.TankID != item_2.TankID)
                 {
-                    TankSprite.tank.bullet.CoordX = 2021;
-                    TankSprite.tank.bullet.CoordY = 2021;
-                    TankSprite.tank.bullet.IsActive = false;
-                    client.SendInfo(TankSprite.tank);
+                    if (bullet_rectangle.Intersects(new Rectangle(item_2.X, item_2.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height)))
+                    {
+                        TankSprite.tank.bullet.CoordX = 2021;
+                        TankSprite.tank.bullet.CoordY = 2021;
+                        TankSprite.tank.bullet.IsActive = false;
+                        client.SendInfo(TankSprite.tank);
+                    }
                 }
+                
             }
 
         }
@@ -451,6 +461,34 @@ namespace Client_Graphic
                 default:
                     break;
             }
+        }
+        private void CheckStatus()
+        {
+            if(TankSprite.tank.HP == 75)
+            {
+                TankSprite.tank.Color[0] = TankSprite.tank.Color[0] - 15; 
+                TankSprite.tank.Color[1] = TankSprite.tank.Color[1] - 15; 
+                TankSprite.tank.Color[2] = TankSprite.tank.Color[2] - 15; 
+            }
+            else if (TankSprite.tank.HP == 50)
+            {
+                TankSprite.tank.Color[0] = TankSprite.tank.Color[0] - 15;
+                TankSprite.tank.Color[1] = TankSprite.tank.Color[1] - 15;
+                TankSprite.tank.Color[2] = TankSprite.tank.Color[2] - 15;
+               
+            }
+            else if (TankSprite.tank.HP == 25)
+            {
+                TankSprite.tank.Color[0] = TankSprite.tank.Color[0] - 15;
+                TankSprite.tank.Color[1] = TankSprite.tank.Color[1] - 15;
+                TankSprite.tank.Color[2] = TankSprite.tank.Color[2] - 15;
+            }
+            else if (TankSprite.tank.HP <= 0)
+            {
+                TankSprite.tank.X = 4044;
+                TankSprite.tank.Y = 4044;
+            }
+           
         }
     }
 }

@@ -76,10 +76,7 @@ namespace TankServer
             int user = 0;
             string json = String.Empty;
             user = clients.Count - 1;
-            if(user>= clients.Count)
-            {
-                user--;
-            }
+           
             while (clients[user].socket.Connected)
             {
                 try
@@ -98,8 +95,12 @@ namespace TankServer
             Console.WriteLine($"User {clients[user].socket.RemoteEndPoint.ToString()} disconnect");
             clients.RemoveAt(user);
             tanks.RemoveAt(user);
-           
-            
+
+            if (user > clients.Count)
+            {
+                user--;
+            }
+
 
         }
       
