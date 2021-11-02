@@ -43,6 +43,7 @@ namespace Client_Graphic
         private List<Tank> tanks;
         private Texture2D wall;
         private Rectangle tank;
+        private Rectangle bullet_rectangle;
         public static class Map
         {
             public static char[,] IntMap { set; get; }
@@ -106,7 +107,7 @@ namespace Client_Graphic
            
             wall = Content.Load<Texture2D>(@"Texure\wall");
             Rectangle tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
-
+            Rectangle bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
             client.SendInfo(TankSprite.tank);
         }
 
@@ -182,7 +183,7 @@ namespace Client_Graphic
                 TankSprite.tank.tankDirection = Direction.DOWN;
                 check++;
                 TankSprite.tank.Rotation = 15.7f;
-                if (TankInterMap()&& TankInterTank())
+                if (TankInterMap() && TankInterTank())
                 {
                         TankSprite.tank.Y += TankSprite.tank.Speed;
                         KeyPressed = true;
@@ -193,7 +194,14 @@ namespace Client_Graphic
             }
           
             Boost();
-
+            if (TankSprite.tank.TankID == 0)
+            {
+                if (TankSpriteList.Count > 0)
+                {
+                    TankSprite.tank.TankID = TankSpriteList.Count;
+                    client.SendInfo(TankSprite.tank);
+                }
+            }
             BulletMove();
             KeyPressed = false;
             base.Update(gameTime);
@@ -209,10 +217,7 @@ namespace Client_Graphic
             drawWalls();
             foreach (var item in TankSpriteList)
             {
-                if(TankSprite.tank.TankID == 0)
-                {
-                    TankSprite.tank.TankID = TankSpriteList.Count;
-                }
+                
                 _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.TankTexture.Width / 2f, item.TankTexture.Height / 2f), SpriteEffects.None, 0f);
                 if (item.tank.bullet.IsActive)
                 {
@@ -333,8 +338,8 @@ namespace Client_Graphic
         }
         private void BulletInterMap()
         {
-            Rectangle bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
 
+            bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
             for (int i = 0; i < Map.IntMap.GetLength(0); i++)
             {
                 for (int j = 0; j < Map.IntMap.GetLength(1); j++)
@@ -352,21 +357,24 @@ namespace Client_Graphic
                 }
             }
         }
+
         private bool TankInterTank()
         {
-            Rectangle tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
-            for (int i = 0; i < tanks.Count; i++)
+            tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
+            foreach (var item in TankSpriteList)
             {
-                if (TankSprite.tank.TankID != tanks[i].TankID)
+                if (item.tank.TankID != TankSprite.tank.TankID)
                 {
-                    if (tank.Intersects(new Rectangle(tanks[i].X, tanks[i].Y, TankSprite.TankTexture.Width / 2, TankSprite.TankTexture.Height / 2)))
+                    if (tank.Intersects(new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height)))
                     {
                         return false;
                     }
                 }
             }
+
             return true;
         }
+
         private bool TankInterMap()
         {
             for (int i = 0; i < Map.IntMap.GetLength(0); i++)

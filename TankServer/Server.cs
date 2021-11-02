@@ -88,7 +88,7 @@ namespace TankServer
                     {
                         json = GetInfo(user).ToString();
                         tanks[user] = JsonSerializer.Deserialize<Tank>(json);
-                        tanks[user].TankID = clients.Count;
+                        tanks[user].TankID = user + 1;
                     }
                 }
                 catch (Exception)
