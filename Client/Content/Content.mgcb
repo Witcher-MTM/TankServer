@@ -13,6 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin LabelInfo/TankHP.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:LabelInfo/TankHP.spritefont
+
 #begin Texure/bullet.png
 /importer:TextureImporter
 /processor:TextureProcessor
