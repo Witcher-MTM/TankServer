@@ -23,7 +23,9 @@ namespace TankDLL
         public int[] Color { get; set; }
         public int TankID { get; set; }
         public float Rotation { get; set; }
+        public bool IsAlive { get; set; }
         public int CD { get; set; }
+        public int CD_Respawn { get; set; }
         public Bullet bullet { get; set; }
         public Direction tankDirection { get; set; }
         public Tank()
@@ -39,6 +41,8 @@ namespace TankDLL
             CD = 0;
             TankID = 0;
             tankDirection = Direction.UP;
+            CD_Respawn = 0;
+            IsAlive = true;
         }
 
         public Tank(int x, int y, int speed, int[] color, int rotation)
