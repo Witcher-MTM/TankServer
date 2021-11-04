@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -45,13 +46,14 @@ namespace Client_Graphic
         private Rectangle tank;
         private Rectangle bullet_rectangle;
         private SpriteFont tankHP;
+        private Map map;
 
-        public static class Map
+        public class Map
         {
-            public static char[,] IntMap { set; get; }
-            public static Wall[,] WallMap { set; get; }
+            public char[,] IntMap { set; get; }
+            public Wall[,] WallMap { set; get; }
 
-            static Map()
+            public Map()
             {
                 IntMap = new char[17, 32]{
                     {'X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'},
@@ -78,9 +80,35 @@ namespace Client_Graphic
                     for (int j = 0; j < IntMap.GetLength(1); j++)
                     {
                         WallMap[i, j] = new Wall(new Rectangle(j * 50, i * 50, 50, 50), IntMap[i, j] == 'X' ? true : false);
-                      
                     }
                 }
+                if (!Directory.Exists(@"C:\ProgramData\RubickTanks"))
+                {
+                    Directory.CreateDirectory(@"C:\ProgramData\RubickTanks");
+                }
+                if (!File.Exists(@"C:\ProgramData\RubickTanks\TanksMap.txt"))
+                {
+                    string map = string.Empty;
+                    for (int i = 0; i < IntMap.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < IntMap.GetLength(1); j++)
+                        {
+                            map += IntMap[i, j];
+                        }
+                        map = "\n";
+                    }
+                    File.AppendAllText(@"C:\ProgramData\RubickTanks\TanksMap.txt", map);
+                    
+                }
+            }
+            public Map(char[,] IntMap)
+            {
+                this.IntMap = IntMap;
+            }
+          
+            public override string ToString()
+            {
+                return $"IntMap - {IntMap}; WallMap - {WallMap}";
             }
         }
         public Game1()
@@ -104,6 +132,11 @@ namespace Client_Graphic
 
         protected override void LoadContent()
         {
+            map = new Map();
+            foreach (var item in File.ReadAllText(@"C:\ProgramData\RubickTanks\TanksMap.txt").ToCharArray())
+            {
+
+            }
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
@@ -313,25 +346,25 @@ namespace Client_Graphic
         }
         private void drawWalls()
         {
-            for (int i = 0; i < Map.IntMap.GetLength(0); i++)
+            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
             {
-                for (int j = 0; j < Map.IntMap.GetLength(1); j++)
+                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
                 {
-                    if (Map.WallMap[i, j].IsActive == true)
-                        _spriteBatch.Draw(wall, new Vector2(Map.WallMap[i, j].rec.X, Map.WallMap[i, j].rec.Y), Color.Bisque);
+                    if (this.map.WallMap[i, j].IsActive == true)
+                        _spriteBatch.Draw(wall, new Vector2(this.map.WallMap[i, j].rec.X, this.map.WallMap[i, j].rec.Y), Color.Bisque);
                 }
             }
         }
         private void BulletInter()
         {
             bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
-            for (int i = 0; i < Map.IntMap.GetLength(0); i++)
+            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
             {
-                for (int j = 0; j < Map.IntMap.GetLength(1); j++)
+                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
                 {
-                    if (Map.WallMap[i, j].IsActive == true)
+                    if (this.map.WallMap[i, j].IsActive == true)
                     {
-                        if (bullet_rectangle.Intersects(Map.WallMap[i, j].rec))
+                        if (bullet_rectangle.Intersects(this.map.WallMap[i, j].rec))
                         {
                             TankSprite.tank.bullet.CoordX = 2021;
                             TankSprite.tank.bullet.CoordY = 2021;
@@ -384,13 +417,13 @@ namespace Client_Graphic
 
         private bool TankInterMap()
         {
-            for (int i = 0; i < Map.IntMap.GetLength(0); i++)
+            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
             {
-                for (int j = 0; j < Map.IntMap.GetLength(1); j++)
+                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
                 {
-                    if (Map.WallMap[i, j].IsActive == true)
+                    if (this.map.WallMap[i, j].IsActive == true)
                     {
-                        if (CheckDirectionTank().Intersects(Map.WallMap[i, j].rec))
+                        if (CheckDirectionTank().Intersects(this.map.WallMap[i, j].rec))
                         {
                             return false;
                         }
@@ -458,7 +491,7 @@ namespace Client_Graphic
         }
         private void CheckStatus()
         {
-            
+
             if (TankSprite.tank.IsAlive)
             {
                 if (TankSprite.tank.HP == 75)
@@ -491,7 +524,7 @@ namespace Client_Graphic
                         TankSprite.tank.X = 300;
                         TankSprite.tank.Y = 300;
                         TankSprite.tank.CD_Respawn = 0;
-                       
+
                     }
                 }
             }
