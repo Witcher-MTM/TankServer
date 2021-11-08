@@ -40,6 +40,7 @@ namespace Client_Graphic
         private Rectangle tank;
         private Rectangle bullet_rectangle;
         private SpriteFont tankHP;
+        private SpriteFont Respawn;
         private Wall wall;
         private bool SetTankID;
         public Game1()
@@ -65,16 +66,16 @@ namespace Client_Graphic
 
         protected override void LoadContent()
         {
+            wall.map.LoadMap();
             wall.InitMap();
              _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
-             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
+            wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
             Rectangle tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
             Rectangle bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
             client.SendInfo(TankSprite.tank);
         }
-
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -95,6 +96,7 @@ namespace Client_Graphic
             {
                 TankMove();
             }
+
             SetID();
             Boost();
             BulletInter();
@@ -116,13 +118,14 @@ namespace Client_Graphic
                 if (item.tank.IsAlive)
                 {
                     _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.TankTexture.Width / 2f, item.TankTexture.Height / 2f), SpriteEffects.None, 0f);
+                    _spriteBatch.DrawString(tankHP, $"{TankSprite.tank.HP}", new Vector2(TankSprite.tank.X - 20, TankSprite.tank.Y + 25), Color.White);
                 }
                 if (item.tank.bullet.IsActive)
                 {
                     _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 }
             }
-            _spriteBatch.DrawString(tankHP, $"{TankSprite.tank.HP}", new Vector2(TankSprite.tank.X - 20, TankSprite.tank.Y + 25), Color.White);
+            
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -150,7 +153,7 @@ namespace Client_Graphic
                     TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
                     TankSprite.tank.CheckDirectionBullet();
                     TankSprite.tank.bullet.IsActive = true;
-                    TankSprite.tank.CD = 120;
+                    TankSprite.tank.CD = 100;
                 }
                 if (TankSprite.tank.bullet.IsActive)
                 {
@@ -264,6 +267,7 @@ namespace Client_Graphic
                         TankSprite.tank.HP -= item.tank.bullet.Damage;
                         TankSprite.tank.CheckHP();
                         client.SendInfo(TankSprite.tank);
+                        break;
                     }
                 }
             }
