@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using TankDLL;
-
+using MapDLL;
 namespace TankServer
 {
     public class Server
@@ -23,6 +23,7 @@ namespace TankServer
         public List<Client> clients;
         public List<Task> tasks;
         private List<Tank> tanks;
+        private Map map;
         public Server()
         {
             this.Client_ID = -1;
@@ -33,6 +34,7 @@ namespace TankServer
             this.clients = new List<Client>();
             this.tasks = new List<Task>();
             this.tanks = new List<Tank>();
+            this.map = new Map();
 
         }
         public void StartServer()
@@ -54,6 +56,7 @@ namespace TankServer
         }
         public void Connects()
         {
+            map.SaveMap();
             while (true)
             {
                 this.socketclient = this.socket.Accept();
@@ -100,8 +103,6 @@ namespace TankServer
             {
                 user--;
             }
-
-
         }
       
         public StringBuilder GetInfo(int user)
