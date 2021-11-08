@@ -111,6 +111,29 @@ namespace TankDLL
             }
 
         }
+        
+        public bool TankRespawn()
+        {
+            bool isRespawnWas = false;
+            if (isRespawnWas == false)
+            {
+                if (IsAlive == false)
+                {
+                    CD_Respawn--;
+                    if (CD_Respawn <= 0)
+                    {
+                        HP = 100;
+                        CD_Respawn = 0;
+                        IsAlive = true;
+                        X = 300;
+                        Y = 300;
+                        isRespawnWas = true;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
 
     }

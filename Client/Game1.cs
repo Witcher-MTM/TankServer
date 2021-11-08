@@ -80,7 +80,6 @@ namespace Client_Graphic
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             TankSpriteList.Clear();
-
             try
             {
                 tanks = JsonSerializer.Deserialize<List<Tank>>(client.GetInfo().ToString());
@@ -88,63 +87,22 @@ namespace Client_Graphic
             catch (System.Exception)
             {
             }
-
             for (int i = 0; i < tanks.Count; i++)
             {
                 TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
+            if (TankSprite.tank.IsAlive)
             {
-                TankSprite.tank.tankDirection = Direction.UP;
-                TankSprite.tank.Rotation = 0f;
-                if (TankInterMap() && TankInterTank())
-                {
-                    TankSprite.tank.Y -= TankSprite.tank.Speed;
-                    KeyPressed = true;
-                }
-                client.SendInfo(TankSprite.tank);
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
-            {
-                TankSprite.tank.tankDirection = Direction.LEFT;
-                TankSprite.tank.Rotation = -7.85f;
-                if (TankInterMap() && TankInterTank())
-                {
-                    TankSprite.tank.X -= TankSprite.tank.Speed;
-                    KeyPressed = true;
-                }
-
-                client.SendInfo(TankSprite.tank);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
-            {
-                TankSprite.tank.tankDirection = Direction.RIGHT;
-                TankSprite.tank.Rotation = 7.85f;
-                if (TankInterMap() && TankInterTank())
-                {
-                    TankSprite.tank.X += TankSprite.tank.Speed;
-                    KeyPressed = true;
-                }
-
-                client.SendInfo(TankSprite.tank);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
-            {
-                TankSprite.tank.tankDirection = Direction.DOWN;
-                TankSprite.tank.Rotation = 15.7f;
-                if (TankInterMap() && TankInterTank())
-                {
-                    TankSprite.tank.Y += TankSprite.tank.Speed;
-                    KeyPressed = true;
-                }
-                client.SendInfo(TankSprite.tank);
+                TankMove();
             }
             SetID();
             Boost();
             BulletInter();
             BulletMove();
-            TankRespawn();
+            if (TankSprite.tank.TankRespawn())
+            {
+                client.SendInfo(TankSprite.tank);
+            }
             KeyPressed = false;
             base.Update(gameTime);
         }
@@ -179,28 +137,6 @@ namespace Client_Graphic
             {
                 TankSprite.tank.Speed = 3;
             }
-        }
-        private void TankRespawn()
-        {
-            bool isRespawnWas = false;
-            if (isRespawnWas == false)
-            {
-                if (TankSprite.tank.IsAlive == false)
-                {
-                    TankSprite.tank.CD_Respawn--;
-                    if (TankSprite.tank.CD_Respawn <= 0)
-                    {
-                        TankSprite.tank.HP = 100;
-                        TankSprite.tank.CD_Respawn = 0;
-                        TankSprite.tank.IsAlive = true;
-                        TankSprite.tank.X = 300;
-                        TankSprite.tank.Y = 300;
-                        isRespawnWas = true;
-                        client.SendInfo(TankSprite.tank);
-                    }
-                }
-            }
-
         }
         private void BulletMove()
         {
@@ -264,6 +200,54 @@ namespace Client_Graphic
             else
             {
                 TankSprite.tank.CD = 0;
+                client.SendInfo(TankSprite.tank);
+            }
+        }
+        private void TankMove()
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
+            {
+                TankSprite.tank.tankDirection = Direction.UP;
+                TankSprite.tank.Rotation = 0f;
+                if (TankInterMap() && TankInterTank())
+                {
+                    TankSprite.tank.Y -= TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
+                client.SendInfo(TankSprite.tank);
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
+            {
+                TankSprite.tank.tankDirection = Direction.LEFT;
+                TankSprite.tank.Rotation = -7.85f;
+                if (TankInterMap() && TankInterTank())
+                {
+                    TankSprite.tank.X -= TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
+                client.SendInfo(TankSprite.tank);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
+            {
+                TankSprite.tank.tankDirection = Direction.RIGHT;
+                TankSprite.tank.Rotation = 7.85f;
+                if (TankInterMap() && TankInterTank())
+                {
+                    TankSprite.tank.X += TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
+                client.SendInfo(TankSprite.tank);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
+            {
+                TankSprite.tank.tankDirection = Direction.DOWN;
+                TankSprite.tank.Rotation = 15.7f;
+                if (TankInterMap() && TankInterTank())
+                {
+                    TankSprite.tank.Y += TankSprite.tank.Speed;
+                    KeyPressed = true;
+                }
                 client.SendInfo(TankSprite.tank);
             }
         }
