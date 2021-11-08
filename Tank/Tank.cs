@@ -28,6 +28,8 @@ namespace TankDLL
         public int CD_Respawn { get; set; }
         public Bullet bullet { get; set; }
         public Direction tankDirection { get; set; }
+        public int TankRealWidth { get; set; }
+        public int TankRealHeight { get; set; }
         public Tank()
         {
             Random r = new Random();
@@ -43,6 +45,8 @@ namespace TankDLL
             tankDirection = Direction.UP;
             CD_Respawn = 0;
             IsAlive = true;
+            TankRealWidth = 19;
+            TankRealHeight = 23;
         }
 
         public Tank(int x, int y, int speed, int[] color, int rotation)
