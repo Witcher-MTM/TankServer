@@ -25,13 +25,10 @@ namespace Client_Graphic
             this.port = 8000;
             this.iPEndPoint = new IPEndPoint(IPAddress.Parse(ipAddr), port);
             this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            
         }
         public Client(Socket socket)
         {
-
             this.socket = socket;
-           
         }
         public void Connect()
         {
@@ -40,7 +37,6 @@ namespace Client_Graphic
         }
         public bool SendInfo(Tank tank)
         {
-
             bool check = false;
             try
             {
