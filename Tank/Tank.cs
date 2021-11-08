@@ -15,7 +15,7 @@ namespace TankDLL
     }
     public class Tank
     {
-      
+
         public int HP { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
@@ -81,7 +81,36 @@ namespace TankDLL
                     break;
             }
         }
+        public void CheckHP()
+        {
+            if (IsAlive)
+            {
+                if (HP == 75)
+                {
+                    Color[0] = Color[0] - 15;
+                    Color[1] = Color[1] - 15;
+                    Color[2] = Color[2] - 15;
+                }
+                else if (HP == 50)
+                {
+                    Color[0] = Color[0] - 15;
+                    Color[1] = Color[1] - 15;
+                    Color[2] = Color[2] - 15;
+                }
+                else if (HP == 25)
+                {
+                    Color[0] = Color[0] - 15;
+                    Color[1] = Color[1] - 15;
+                    Color[2] = Color[2] - 15;
+                }
+                else if (HP <= 0)
+                {
+                    IsAlive = false;
+                    CD_Respawn = 600;
+                }
+            }
 
+        }
 
 
     }

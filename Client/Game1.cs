@@ -15,13 +15,10 @@ namespace Client_Graphic
 {
     public class Sprite
     {
-
-
         public Texture2D TankTexture { get; set; }
         public Texture2D BulletTexture { get; set; }
         public Texture2D MapTexture { get; set; }
         public Tank tank { get; set; }
-
         public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet)
         {
             this.TankTexture = textureT;
@@ -29,8 +26,6 @@ namespace Client_Graphic
             this.BulletTexture = textureB;
             this.tank.bullet = bullet;
         }
-
-
     }
 
     public class Game1 : Game
@@ -42,75 +37,11 @@ namespace Client_Graphic
         private Sprite TankSprite;
         private bool KeyPressed;
         private List<Tank> tanks;
-        private Texture2D wall;
         private Rectangle tank;
         private Rectangle bullet_rectangle;
         private SpriteFont tankHP;
-        private Map map;
+        private Wall wall;
         private bool SetTankID;
-        public class Map
-        {
-            public char[,] IntMap { set; get; }
-            public Wall[,] WallMap { set; get; }
-
-            public Map()
-            {
-                IntMap = new char[17, 32]{
-                    {'X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X',' ','X',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ','X',' ','X'},
-                    {'X',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X',' ',' ','X'},
-                    {'X',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X',' ',' ','X'},
-                    {'X',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ','X'},
-                    {'X',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X',' ',' ','X'},
-                    {'X',' ',' ','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X',' ',' ','X'},
-                    {'X',' ','X',' ','X','X','X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X','X','X',' ','X',' ','X'},
-                    {'X',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','X'},
-                    {'X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X','X'}
-                };
-                WallMap = new Wall[17, 34];
-                for (int i = 0; i < IntMap.GetLength(0); i++)
-                {
-                    for (int j = 0; j < IntMap.GetLength(1); j++)
-                    {
-                        WallMap[i, j] = new Wall(new Rectangle(j * 50, i * 50, 50, 50), IntMap[i, j] == 'X' ? true : false);
-                    }
-                }
-                if (!Directory.Exists(@"C:\ProgramData\RubickTanks"))
-                {
-                    Directory.CreateDirectory(@"C:\ProgramData\RubickTanks");
-                }
-                if (!File.Exists(@"C:\ProgramData\RubickTanks\TanksMap.txt"))
-                {
-                    string map = string.Empty;
-                    for (int i = 0; i < IntMap.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < IntMap.GetLength(1); j++)
-                        {
-                            map += IntMap[i, j];
-                        }
-                        map += "\n";
-                    }
-                    File.AppendAllText(@"C:\ProgramData\RubickTanks\TanksMap.txt", map);
-
-                }
-            }
-            public Map(char[,] IntMap)
-            {
-                this.IntMap = IntMap;
-            }
-
-            public override string ToString()
-            {
-                return $"IntMap - {IntMap}; WallMap - {WallMap}";
-            }
-        }
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -120,6 +51,7 @@ namespace Client_Graphic
             this.tanks = new List<Tank>();
             this.TankSpriteList = new List<Sprite>();
             this.SetTankID = false;
+            this.wall = new Wall();
         }
 
         protected override void Initialize()
@@ -133,26 +65,18 @@ namespace Client_Graphic
 
         protected override void LoadContent()
         {
-            map = new Map();
-            foreach (var item in File.ReadAllText(@"C:\ProgramData\RubickTanks\TanksMap.txt").ToCharArray())
-            {
-
-            }
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            wall.InitMap();
+             _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
-            wall = Content.Load<Texture2D>(@"Texure\wall");
+             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
             Rectangle tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
             Rectangle bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
             client.SendInfo(TankSprite.tank);
         }
 
-
-        int check = 0;
-
         protected override void Update(GameTime gameTime)
         {
-
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             TankSpriteList.Clear();
@@ -160,7 +84,6 @@ namespace Client_Graphic
             try
             {
                 tanks = JsonSerializer.Deserialize<List<Tank>>(client.GetInfo().ToString());
-
             }
             catch (System.Exception)
             {
@@ -168,11 +91,8 @@ namespace Client_Graphic
 
             for (int i = 0; i < tanks.Count; i++)
             {
-
                 TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
-
             }
-
             if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
             {
                 TankSprite.tank.tankDirection = Direction.UP;
@@ -182,8 +102,6 @@ namespace Client_Graphic
                     TankSprite.tank.Y -= TankSprite.tank.Speed;
                     KeyPressed = true;
                 }
-
-
                 client.SendInfo(TankSprite.tank);
             }
 
@@ -220,11 +138,8 @@ namespace Client_Graphic
                     TankSprite.tank.Y += TankSprite.tank.Speed;
                     KeyPressed = true;
                 }
-
                 client.SendInfo(TankSprite.tank);
-
             }
-
             SetID();
             Boost();
             BulletInter();
@@ -232,16 +147,12 @@ namespace Client_Graphic
             TankRespawn();
             KeyPressed = false;
             base.Update(gameTime);
-
         }
-
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             _spriteBatch.Begin();
-            drawWalls();
+            wall.Draw(_spriteBatch);
             foreach (var item in TankSpriteList)
             {
                 if (item.tank.IsAlive)
@@ -356,17 +267,6 @@ namespace Client_Graphic
                 client.SendInfo(TankSprite.tank);
             }
         }
-        private void drawWalls()
-        {
-            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
-                {
-                    if (this.map.WallMap[i, j].IsActive == true)
-                        _spriteBatch.Draw(wall, new Vector2(this.map.WallMap[i, j].rec.X, this.map.WallMap[i, j].rec.Y), Color.Bisque);
-                }
-            }
-        }
         private void BulletInter()
         {
             bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
@@ -378,7 +278,7 @@ namespace Client_Graphic
                     if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
                     {
                         TankSprite.tank.HP -= item.tank.bullet.Damage;
-                        CheckStatus();
+                        TankSprite.tank.CheckHP();
                         client.SendInfo(TankSprite.tank);
                     }
                 }
@@ -396,13 +296,13 @@ namespace Client_Graphic
                     }
                 }
             }
-            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
+            for (int i = 0; i <this.wall.map.IntMap.GetLength(0); i++)
             {
-                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
+                for (int j = 0; j < this.wall.map.IntMap.GetLength(1); j++)
                 {
-                    if (this.map.WallMap[i, j].IsActive == true)
+                    if (this.wall.WallMap[i, j].IsActive == true)
                     {
-                        if (bullet_rectangle.Intersects(this.map.WallMap[i, j].rec))
+                        if (bullet_rectangle.Intersects(this.wall.WallMap[i, j].rec))
                         {
                             TankSprite.tank.bullet.CoordX = 2021;
                             TankSprite.tank.bullet.CoordY = 2021;
@@ -430,13 +330,13 @@ namespace Client_Graphic
 
         private bool TankInterMap()
         {
-            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
+            for (int i = 0; i < this.wall.map.IntMap.GetLength(0); i++)
             {
-                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
+                for (int j = 0; j < this.wall.map.IntMap.GetLength(1); j++)
                 {
-                    if (this.map.WallMap[i, j].IsActive == true)
+                    if (this.wall.WallMap[i, j].IsActive == true)
                     {
-                        if (CheckDirectionTank().Intersects(this.map.WallMap[i, j].rec))
+                        if (CheckDirectionTank().Intersects(this.wall.WallMap[i, j].rec))
                         {
                             return false;
                         }
@@ -474,36 +374,7 @@ namespace Client_Graphic
             }
             return tank;
         }
-        private void CheckStatus()
-        {
-
-            if (TankSprite.tank.IsAlive)
-            {
-                if (TankSprite.tank.HP == 75)
-                {
-                    TankSprite.tank.Color[0] = TankSprite.tank.Color[0] - 15;
-                    TankSprite.tank.Color[1] = TankSprite.tank.Color[1] - 15;
-                    TankSprite.tank.Color[2] = TankSprite.tank.Color[2] - 15;
-                }
-                else if (TankSprite.tank.HP == 50)
-                {
-                    TankSprite.tank.Color[0] = TankSprite.tank.Color[0] - 15;
-                    TankSprite.tank.Color[1] = TankSprite.tank.Color[1] - 15;
-                    TankSprite.tank.Color[2] = TankSprite.tank.Color[2] - 15;
-                }
-                else if (TankSprite.tank.HP == 25)
-                {
-                    TankSprite.tank.Color[0] = TankSprite.tank.Color[0] - 15;
-                    TankSprite.tank.Color[1] = TankSprite.tank.Color[1] - 15;
-                    TankSprite.tank.Color[2] = TankSprite.tank.Color[2] - 15;
-                }
-                else if (TankSprite.tank.HP <= 0)
-                {
-                    TankSprite.tank.IsAlive = false;
-                    TankSprite.tank.CD_Respawn = 600;
-                }
-            }
-        }
+        
         private void SetID()
         {
             if (SetTankID == false)
@@ -518,7 +389,6 @@ namespace Client_Graphic
                     }
                 }
             }
-
         }
     }
 }
