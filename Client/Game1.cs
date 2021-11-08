@@ -30,6 +30,7 @@ namespace Client_Graphic
 
     public class Game1 : Game
     {
+        private Menu menu;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Client client = new Client();
@@ -40,9 +41,10 @@ namespace Client_Graphic
         private Rectangle tank;
         private Rectangle bullet_rectangle;
         private SpriteFont tankHP;
-        private SpriteFont Respawn;
         private Wall wall;
         private bool SetTankID;
+        private Button button;
+        private SpriteFont textForMenu;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -72,14 +74,21 @@ namespace Client_Graphic
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
+            button = new Button(new Rectangle(100, 100, 300, 80), Content.Load<Texture2D>(@"Texure\MenuTexture\Button"));
+            textForMenu = Content.Load<SpriteFont>(@"Texure\MenuTexture\MenuText");
+            menu = new Menu(button, textForMenu);
             Rectangle tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
             Rectangle bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
             client.SendInfo(TankSprite.tank);
         }
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
+            if (menu.Exit)
+            {
+                Exit();
+            }
             TankSpriteList.Clear();
             try
             {
@@ -92,10 +101,15 @@ namespace Client_Graphic
             {
                 TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+              menu.IsActive = true;
+            }
             if (TankSprite.tank.IsAlive)
             {
                 TankMove();
             }
+            menu.CathClick();
             SetID();
             Boost();
             BulletInter();
@@ -111,20 +125,14 @@ namespace Client_Graphic
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
-            wall.Draw(_spriteBatch);
-            foreach (var item in TankSpriteList)
+            if (menu.IsActive)
             {
-                if (item.tank.IsAlive)
-                {
-                    _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight), SpriteEffects.None, 0f);
-                    _spriteBatch.DrawString(tankHP, $"{TankSprite.tank.HP}", new Vector2(TankSprite.tank.X - 20, TankSprite.tank.Y + 25), Color.White);
-                }
-                if (item.tank.bullet.IsActive)
-                {
-                    _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
-                }
+                menu.Draw(_spriteBatch);
             }
-            
+            else
+            {
+                DrawGame();
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -139,6 +147,23 @@ namespace Client_Graphic
             {
                 TankSprite.tank.Speed = 3;
             }
+        }
+        private void DrawGame()
+        {
+            wall.Draw(_spriteBatch);
+            foreach (var item in TankSpriteList)
+            {
+                if (item.tank.IsAlive)
+                {
+                    _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight), SpriteEffects.None, 0f);
+                    _spriteBatch.DrawString(tankHP, $"{TankSprite.tank.HP}", new Vector2(TankSprite.tank.X - 20, TankSprite.tank.Y + 25), Color.White);
+                }
+                if (item.tank.bullet.IsActive)
+                {
+                    _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
+                }
+            }
+
         }
         private void BulletMove()
         {
