@@ -85,7 +85,7 @@ namespace Client_Graphic
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
-            if (menu.Exit)
+            if (menu.State == BtnState.Exit)
             {
                 Exit();
             }

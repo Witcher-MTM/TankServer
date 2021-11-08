@@ -6,6 +6,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 namespace Client_Graphic
 {
+    public enum BtnState
+    {
+        Play,
+        Settings,
+        Exit
+    }
     public class Menu
     {
         public bool IsActive { get; set; }
@@ -13,14 +19,13 @@ namespace Client_Graphic
         public Button BtnSettings { get; set; }
         public Button BtnExit { get; set; }
         public SpriteFont text { get; set; }
-        public bool Exit { get; set; }
+        public BtnState State { get; set; }
         public Menu(Button btn , SpriteFont text)
         {
             BtnPlay = new Button(new Rectangle(300, 300, 300, 80), btn.Texture);
             BtnSettings = new Button(new Rectangle(600, 300, 300, 80), btn.Texture);
             BtnExit = new Button(new Rectangle(900, 300, 300, 80), btn.Texture);
             this.text = text;
-            Exit = false;
             IsActive = false;
         }
 
@@ -44,15 +49,16 @@ namespace Client_Graphic
                 {
                     if (new Rectangle(mouse.X, mouse.Y, 5, 5).Intersects(BtnPlay.Rectangle))
                     {
+                        State = BtnState.Play;
                         IsActive = false;
                     }
                     if (new Rectangle(mouse.X, mouse.Y, 5, 5).Intersects(BtnSettings.Rectangle))
                     {
-                        
+                        State = BtnState.Settings;
                     }
                     if (new Rectangle(mouse.X, mouse.Y, 5, 5).Intersects(BtnExit.Rectangle))
                     {
-                        Exit = true;
+                        State = BtnState.Exit;
                     }
                 }
             }
