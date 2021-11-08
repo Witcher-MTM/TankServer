@@ -53,6 +53,36 @@ namespace TankDLL
             Color = color;
             Rotation = rotation;
         }
-       
+        public void CheckDirectionBullet()
+        {
+            switch (tankDirection)
+            {
+                case Direction.UP:
+                    {
+                        bullet.CoordY -= 40;
+                        break;
+                    }
+                case Direction.DOWN:
+                    {
+                        bullet.CoordY += 40;
+                        break;
+                    }
+                case Direction.LEFT:
+                    {
+                        bullet.CoordX -= 40;
+                        break;
+                    }
+                case Direction.RIGHT:
+                    {
+                        bullet.CoordX += 40;
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+
+
     }
 }

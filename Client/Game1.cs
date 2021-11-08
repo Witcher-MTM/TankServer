@@ -47,7 +47,7 @@ namespace Client_Graphic
         private Rectangle bullet_rectangle;
         private SpriteFont tankHP;
         private Map map;
-
+        private bool SetTankID;
         public class Map
         {
             public char[,] IntMap { set; get; }
@@ -95,17 +95,17 @@ namespace Client_Graphic
                         {
                             map += IntMap[i, j];
                         }
-                        map = "\n";
+                        map += "\n";
                     }
                     File.AppendAllText(@"C:\ProgramData\RubickTanks\TanksMap.txt", map);
-                    
+
                 }
             }
             public Map(char[,] IntMap)
             {
                 this.IntMap = IntMap;
             }
-          
+
             public override string ToString()
             {
                 return $"IntMap - {IntMap}; WallMap - {WallMap}";
@@ -119,6 +119,7 @@ namespace Client_Graphic
             KeyPressed = false;
             this.tanks = new List<Tank>();
             this.TankSpriteList = new List<Sprite>();
+            this.SetTankID = false;
         }
 
         protected override void Initialize()
@@ -175,7 +176,6 @@ namespace Client_Graphic
             if (Keyboard.GetState().IsKeyDown(Keys.W) && KeyPressed == false)
             {
                 TankSprite.tank.tankDirection = Direction.UP;
-                check++;
                 TankSprite.tank.Rotation = 0f;
                 if (TankInterMap() && TankInterTank())
                 {
@@ -190,7 +190,6 @@ namespace Client_Graphic
             if (Keyboard.GetState().IsKeyDown(Keys.A) && KeyPressed == false)
             {
                 TankSprite.tank.tankDirection = Direction.LEFT;
-                check++;
                 TankSprite.tank.Rotation = -7.85f;
                 if (TankInterMap() && TankInterTank())
                 {
@@ -203,7 +202,6 @@ namespace Client_Graphic
             if (Keyboard.GetState().IsKeyDown(Keys.D) && KeyPressed == false)
             {
                 TankSprite.tank.tankDirection = Direction.RIGHT;
-                check++;
                 TankSprite.tank.Rotation = 7.85f;
                 if (TankInterMap() && TankInterTank())
                 {
@@ -216,7 +214,6 @@ namespace Client_Graphic
             if (Keyboard.GetState().IsKeyDown(Keys.S) && KeyPressed == false)
             {
                 TankSprite.tank.tankDirection = Direction.DOWN;
-                check++;
                 TankSprite.tank.Rotation = 15.7f;
                 if (TankInterMap() && TankInterTank())
                 {
@@ -228,17 +225,11 @@ namespace Client_Graphic
 
             }
 
+            SetID();
             Boost();
-            if (TankSprite.tank.TankID == 0)
-            {
-                if (TankSpriteList.Count > 0)
-                {
-                    TankSprite.tank.TankID = TankSpriteList.Count;
-                    client.SendInfo(TankSprite.tank);
-                }
-            }
+            BulletInter();
             BulletMove();
-
+            TankRespawn();
             KeyPressed = false;
             base.Update(gameTime);
 
@@ -278,9 +269,31 @@ namespace Client_Graphic
                 TankSprite.tank.Speed = 3;
             }
         }
+        private void TankRespawn()
+        {
+            bool isRespawnWas = false;
+            if (isRespawnWas == false)
+            {
+                if (TankSprite.tank.IsAlive == false)
+                {
+                    TankSprite.tank.CD_Respawn--;
+                    if (TankSprite.tank.CD_Respawn <= 0)
+                    {
+                        TankSprite.tank.HP = 100;
+                        TankSprite.tank.CD_Respawn = 0;
+                        TankSprite.tank.IsAlive = true;
+                        TankSprite.tank.X = 300;
+                        TankSprite.tank.Y = 300;
+                        isRespawnWas = true;
+                        client.SendInfo(TankSprite.tank);
+                    }
+                }
+            }
+
+        }
         private void BulletMove()
         {
-            BulletInter();
+
             if (TankSprite.tank.IsAlive == true)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Space) && TankSprite.tank.CD == 0)
@@ -288,7 +301,7 @@ namespace Client_Graphic
                     TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
                     TankSprite.tank.bullet.CoordX = TankSprite.tank.X;
                     TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
-                    CheckDirectionBullet();
+                    TankSprite.tank.CheckDirectionBullet();
                     TankSprite.tank.bullet.IsActive = true;
                     TankSprite.tank.CD = 120;
                 }
@@ -340,7 +353,6 @@ namespace Client_Graphic
             else
             {
                 TankSprite.tank.CD = 0;
-                TankSprite.tank.CD_Respawn--;
                 client.SendInfo(TankSprite.tank);
             }
         }
@@ -358,22 +370,7 @@ namespace Client_Graphic
         private void BulletInter()
         {
             bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
-            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
-                {
-                    if (this.map.WallMap[i, j].IsActive == true)
-                    {
-                        if (bullet_rectangle.Intersects(this.map.WallMap[i, j].rec))
-                        {
-                            TankSprite.tank.bullet.CoordX = 2021;
-                            TankSprite.tank.bullet.CoordY = 2021;
-                            client.SendInfo(TankSprite.tank);
-                            TankSprite.tank.bullet.IsActive = false;
-                        }
-                    }
-                }
-            }
+            tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
             foreach (var item in TankSpriteList)
             {
                 if (TankSprite.tank.TankID != item.tank.TankID)
@@ -396,6 +393,22 @@ namespace Client_Graphic
                         TankSprite.tank.bullet.CoordY = 2021;
                         TankSprite.tank.bullet.IsActive = false;
                         client.SendInfo(TankSprite.tank);
+                    }
+                }
+            }
+            for (int i = 0; i < this.map.IntMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < this.map.IntMap.GetLength(1); j++)
+                {
+                    if (this.map.WallMap[i, j].IsActive == true)
+                    {
+                        if (bullet_rectangle.Intersects(this.map.WallMap[i, j].rec))
+                        {
+                            TankSprite.tank.bullet.CoordX = 2021;
+                            TankSprite.tank.bullet.CoordY = 2021;
+                            client.SendInfo(TankSprite.tank);
+                            TankSprite.tank.bullet.IsActive = false;
+                        }
                     }
                 }
             }
@@ -461,34 +474,6 @@ namespace Client_Graphic
             }
             return tank;
         }
-        private void CheckDirectionBullet()
-        {
-            switch (TankSprite.tank.tankDirection)
-            {
-                case Direction.UP:
-                    {
-                        TankSprite.tank.bullet.CoordY -= 40;
-                        break;
-                    }
-                case Direction.DOWN:
-                    {
-                        TankSprite.tank.bullet.CoordY += 40;
-                        break;
-                    }
-                case Direction.LEFT:
-                    {
-                        TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed + 10;
-                        break;
-                    }
-                case Direction.RIGHT:
-                    {
-                        TankSprite.tank.bullet.CoordX += 40;
-                        break;
-                    }
-                default:
-                    break;
-            }
-        }
         private void CheckStatus()
         {
 
@@ -516,18 +501,24 @@ namespace Client_Graphic
                 {
                     TankSprite.tank.IsAlive = false;
                     TankSprite.tank.CD_Respawn = 600;
-
-                    if (TankSprite.tank.CD_Respawn <= 0)
+                }
+            }
+        }
+        private void SetID()
+        {
+            if (SetTankID == false)
+            {
+                if (TankSprite.tank.TankID == 0)
+                {
+                    if (TankSpriteList.Count > 0)
                     {
-                        TankSprite.tank.IsAlive = true;
-                        TankSprite.tank.HP = 100;
-                        TankSprite.tank.X = 300;
-                        TankSprite.tank.Y = 300;
-                        TankSprite.tank.CD_Respawn = 0;
-
+                        TankSprite.tank.TankID = TankSpriteList.Count;
+                        client.SendInfo(TankSprite.tank);
+                        SetTankID = true;
                     }
                 }
             }
+
         }
     }
 }
