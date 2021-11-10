@@ -24,7 +24,7 @@ namespace TankDLL
         public int TankID { get; set; }
         public float Rotation { get; set; }
         public bool IsAlive { get; set; }
-        public int CD { get; set; }
+
         public int CD_Respawn { get; set; }
         public Bullet bullet { get; set; }
         public Direction tankDirection { get; set; }
@@ -40,7 +40,6 @@ namespace TankDLL
             Speed = 3;
             Color = new int[] { r.Next(50, 256), r.Next(50, 256), r.Next(50, 256) };
             Rotation = 0f;
-            CD = 0;
             TankID = 0;
             tankDirection = Direction.UP;
             CD_Respawn = 0;
@@ -56,34 +55,6 @@ namespace TankDLL
             Speed = speed;
             Color = color;
             Rotation = rotation;
-        }
-        public void CheckDirectionBullet()
-        {
-            switch (tankDirection)
-            {
-                case Direction.UP:
-                    {
-                        bullet.CoordY -= 40;
-                        break;
-                    }
-                case Direction.DOWN:
-                    {
-                        bullet.CoordY += 40;
-                        break;
-                    }
-                case Direction.LEFT:
-                    {
-                        bullet.CoordX -= 40;
-                        break;
-                    }
-                case Direction.RIGHT:
-                    {
-                        bullet.CoordX += 40;
-                        break;
-                    }
-                default:
-                    break;
-            }
         }
         public void CheckHP()
         {
@@ -138,6 +109,7 @@ namespace TankDLL
             }
             return false;
         }
+        
 
 
     }

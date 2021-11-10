@@ -35,7 +35,7 @@ namespace Client_Graphic
             {
                 for (int j = 0; j < map.IntMap.GetLength(1); j++)
                 {
-                    WallMap[i, j] = new Wall(new Rectangle(j * 50, i * 50, 50, 50), map.IntMap[i, j] == 'X' ? true : false);
+                    WallMap[i, j] = new Wall(new Rectangle(j * 50, i * 50, 55, 55), map.IntMap[i, j] == 'X' ? true : false);
                 }
             }
         }

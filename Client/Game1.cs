@@ -13,20 +13,7 @@ using TankDLL;
 
 namespace Client_Graphic
 {
-    public class Sprite
-    {
-        public Texture2D TankTexture { get; set; }
-        public Texture2D BulletTexture { get; set; }
-        public Texture2D MapTexture { get; set; }
-        public Tank tank { get; set; }
-        public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet)
-        {
-            this.TankTexture = textureT;
-            this.tank = tank;
-            this.BulletTexture = textureB;
-            this.tank.bullet = bullet;
-        }
-    }
+ 
 
     public class Game1 : Game
     {
@@ -170,63 +157,52 @@ namespace Client_Graphic
 
             if (TankSprite.tank.IsAlive == true)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && TankSprite.tank.CD == 0)
+                if (Keyboard.GetState().IsKeyDown(Keys.Space) && TankSprite.tank.bullet.CD == 0)
                 {
                     TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
                     TankSprite.tank.bullet.CoordX = TankSprite.tank.X;
-                    TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
-                    TankSprite.tank.CheckDirectionBullet();
+                    TankSprite.tank.bullet.bulletDirection = TankSprite.tank.tankDirection;
+                    TankSprite.tank.bullet.CheckDirection();
                     TankSprite.tank.bullet.IsActive = true;
-                    TankSprite.tank.CD = 60;
+                    TankSprite.tank.bullet.CD = 60;
                 }
                 if (TankSprite.tank.bullet.IsActive)
                 {
-                    if (TankSprite.tank.bullet.Rotation == 0f)
+                    switch (TankSprite.tank.bullet.bulletDirection)
                     {
-                        if (TankSprite.tank.bullet.CoordY >= -10)
-                        {
-                            TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
-                    }
-                    else if (TankSprite.tank.bullet.Rotation == 15.7f)
-                    {
-                        if (TankSprite.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10)
-                        {
-                            TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
-                    }
-                    else if (TankSprite.tank.bullet.Rotation == -7.85f)
-                    {
-                        if (TankSprite.tank.bullet.CoordX >= -10)
-                        {
-                            TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
-                    }
-                    else if (TankSprite.tank.bullet.Rotation == 7.85f)
-                    {
-                        if (TankSprite.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10)
-                        {
-                            TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
+                        case Direction.UP:
+                            {
+                                TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        case Direction.DOWN:
+                            {
+                                TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        case Direction.LEFT:
+                            {
+                                TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        case Direction.RIGHT:
+                            {
+                                TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        default:
+                            break;
                     }
                     client.SendInfo(TankSprite.tank);
                 }
-                if (TankSprite.tank.CD > 0)
+                if (TankSprite.tank.bullet.CD > 0)
                 {
-                    TankSprite.tank.CD--;
+                    TankSprite.tank.bullet.CD--;
                 }
             }
             else
             {
-                TankSprite.tank.CD = 0;
+                TankSprite.tank.bullet.CD = 0;
                 client.SendInfo(TankSprite.tank);
             }
         }
@@ -377,22 +353,22 @@ namespace Client_Graphic
             {
                 case Direction.UP:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - (TankSprite.tank.Speed + TankSprite.TankTexture.Height / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - (TankSprite.tank.Speed + TankSprite.tank.TankRealHeight / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.DOWN:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + TankSprite.tank.Speed, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + (TankSprite.tank.Speed + TankSprite.tank.TankRealHeight / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.LEFT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.TankTexture.Width / 2), TankSprite.tank.Y - 20, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.tank.TankRealWidth / 2), TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.RIGHT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X + TankSprite.tank.Speed, TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X + (TankSprite.tank.Speed + TankSprite.tank.TankRealWidth / 2), TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 default:
