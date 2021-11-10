@@ -31,4 +31,7 @@
     <ProjectReference Include="..\MapDLL\MapDLL.csproj" />
     <ProjectReference Include="..\Tank\TankDLL.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AnimateString\" />
+  </ItemGroup>
 </Project>

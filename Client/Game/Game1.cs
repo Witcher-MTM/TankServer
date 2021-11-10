@@ -251,6 +251,7 @@ namespace Client_Graphic
                     if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
                     {
                         TankSprite.tank.HP -= item.tank.bullet.Damage;
+
                         TankSprite.tank.CheckHP();
                         client.SendInfo(TankSprite.tank);
                         break;
