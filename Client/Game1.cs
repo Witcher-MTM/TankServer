@@ -177,7 +177,7 @@ namespace Client_Graphic
                     TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
                     TankSprite.tank.CheckDirectionBullet();
                     TankSprite.tank.bullet.IsActive = true;
-                    TankSprite.tank.CD = 100;
+                    TankSprite.tank.CD = 60;
                 }
                 if (TankSprite.tank.bullet.IsActive)
                 {
@@ -316,10 +316,24 @@ namespace Client_Graphic
                     {
                         if (bullet_rectangle.Intersects(this.wall.WallMap[i, j].rec))
                         {
+                            if(i!=0 && i != this.wall.map.IntMap.GetLength(0)-1)
+                            {
+                                if(j!=0 && j != this.wall.map.IntMap.GetLength(1)-1)
+                                {
+                                    this.wall.WallMap[i, j].HP -= TankSprite.tank.bullet.Damage;
+                                    this.wall.CheckStatus();
+                                    if (this.wall.WallMap[i, j].HP <= 0)
+                                    {
+                                        this.wall.WallMap[i, j].IsActive = false;
+                                    }
+                                }
+                               
+                            }
                             TankSprite.tank.bullet.CoordX = 2021;
                             TankSprite.tank.bullet.CoordY = 2021;
-                            client.SendInfo(TankSprite.tank);
                             TankSprite.tank.bullet.IsActive = false;
+                            client.SendInfo(TankSprite.tank);
+                            break;
                         }
                     }
                 }
