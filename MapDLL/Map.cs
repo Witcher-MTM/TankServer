@@ -36,6 +36,7 @@ namespace MapDLL
         }
         public void SaveMap()
         {
+           
             if (!Directory.Exists(@"C:\ProgramData\RubickTanks"))
             {
                 Directory.CreateDirectory(@"C:\ProgramData\RubickTanks");
@@ -80,5 +81,6 @@ namespace MapDLL
                 }
             }
         }
+
     }
 }

@@ -13,23 +13,11 @@ using TankDLL;
 
 namespace Client_Graphic
 {
-    public class Sprite
-    {
-        public Texture2D TankTexture { get; set; }
-        public Texture2D BulletTexture { get; set; }
-        public Texture2D MapTexture { get; set; }
-        public Tank tank { get; set; }
-        public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet)
-        {
-            this.TankTexture = textureT;
-            this.tank = tank;
-            this.BulletTexture = textureB;
-            this.tank.bullet = bullet;
-        }
-    }
+ 
 
     public class Game1 : Game
     {
+        private Menu menu;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Client client = new Client();
@@ -40,9 +28,10 @@ namespace Client_Graphic
         private Rectangle tank;
         private Rectangle bullet_rectangle;
         private SpriteFont tankHP;
-        private SpriteFont Respawn;
         private Wall wall;
         private bool SetTankID;
+        private Button button;
+        private SpriteFont textForMenu;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -72,14 +61,21 @@ namespace Client_Graphic
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
+            button = new Button(new Rectangle(100, 100, 300, 80), Content.Load<Texture2D>(@"Texure\MenuTexture\Button"));
+            textForMenu = Content.Load<SpriteFont>(@"Texure\MenuTexture\MenuText");
+            menu = new Menu(button, textForMenu);
             Rectangle tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.TankTexture.Width, TankSprite.TankTexture.Height);
             Rectangle bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
             client.SendInfo(TankSprite.tank);
         }
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
+            if (menu.State == BtnState.Exit)
+            {
+                Exit();
+            }
             TankSpriteList.Clear();
             try
             {
@@ -92,12 +88,16 @@ namespace Client_Graphic
             {
                 TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) && menu.IsActive == false)
+            {
+                menu.IsActive = true;
+            }
             if (TankSprite.tank.IsAlive)
             {
                 TankMove();
             }
+            menu.CathClick();
             SetID();
-            Boost();
             BulletInter();
             BulletMove();
             if (TankSprite.tank.TankRespawn())
@@ -111,6 +111,19 @@ namespace Client_Graphic
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
+            if (menu.IsActive)
+            {
+                menu.Draw(_spriteBatch);
+            }
+            else
+            {
+                DrawGame();
+            }
+            _spriteBatch.End();
+            base.Draw(gameTime);
+        }
+        private void DrawGame()
+        {
             wall.Draw(_spriteBatch);
             foreach (var item in TankSpriteList)
             {
@@ -124,84 +137,58 @@ namespace Client_Graphic
                     _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 }
             }
-            
-            _spriteBatch.End();
-            base.Draw(gameTime);
-        }
-
-        private void Boost()
-        {
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
-            {
-                TankSprite.tank.Speed = 6;
-            }
-            else
-            {
-                TankSprite.tank.Speed = 3;
-            }
         }
         private void BulletMove()
         {
 
             if (TankSprite.tank.IsAlive == true)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Space) && TankSprite.tank.CD == 0)
+                if (Keyboard.GetState().IsKeyDown(Keys.Space) && TankSprite.tank.bullet.CD == 0)
                 {
                     TankSprite.tank.bullet.CoordY = TankSprite.tank.Y;
                     TankSprite.tank.bullet.CoordX = TankSprite.tank.X;
-                    TankSprite.tank.bullet.Rotation = TankSprite.tank.Rotation;
-                    TankSprite.tank.CheckDirectionBullet();
+                    TankSprite.tank.bullet.bulletDirection = TankSprite.tank.tankDirection;
+                    TankSprite.tank.bullet.CheckDirection();
                     TankSprite.tank.bullet.IsActive = true;
-                    TankSprite.tank.CD = 100;
+                    TankSprite.tank.bullet.CD = 60;
                 }
                 if (TankSprite.tank.bullet.IsActive)
                 {
-                    if (TankSprite.tank.bullet.Rotation == 0f)
+                    switch (TankSprite.tank.bullet.bulletDirection)
                     {
-                        if (TankSprite.tank.bullet.CoordY >= -10)
-                        {
-                            TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
-                    }
-                    else if (TankSprite.tank.bullet.Rotation == 15.7f)
-                    {
-                        if (TankSprite.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10)
-                        {
-                            TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
-                    }
-                    else if (TankSprite.tank.bullet.Rotation == -7.85f)
-                    {
-                        if (TankSprite.tank.bullet.CoordX >= -10)
-                        {
-                            TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
-                    }
-                    else if (TankSprite.tank.bullet.Rotation == 7.85f)
-                    {
-                        if (TankSprite.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10)
-                        {
-                            TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
-                        }
-                        else
-                            TankSprite.tank.bullet.IsActive = false;
+                        case Direction.UP:
+                            {
+                                TankSprite.tank.bullet.CoordY -= TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        case Direction.DOWN:
+                            {
+                                TankSprite.tank.bullet.CoordY += TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        case Direction.LEFT:
+                            {
+                                TankSprite.tank.bullet.CoordX -= TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        case Direction.RIGHT:
+                            {
+                                TankSprite.tank.bullet.CoordX += TankSprite.tank.bullet.Speed;
+                            }
+                            break;
+                        default:
+                            break;
                     }
                     client.SendInfo(TankSprite.tank);
                 }
-                if (TankSprite.tank.CD > 0)
+                if (TankSprite.tank.bullet.CD > 0)
                 {
-                    TankSprite.tank.CD--;
+                    TankSprite.tank.bullet.CD--;
                 }
             }
             else
             {
-                TankSprite.tank.CD = 0;
+                TankSprite.tank.bullet.CD = 0;
                 client.SendInfo(TankSprite.tank);
             }
         }
@@ -291,10 +278,23 @@ namespace Client_Graphic
                     {
                         if (bullet_rectangle.Intersects(this.wall.WallMap[i, j].rec))
                         {
+                            if(i!=0 && i != this.wall.map.IntMap.GetLength(0)-1)
+                            {
+                                if(j!=0 && j != this.wall.map.IntMap.GetLength(1)-1)
+                                {
+                                    this.wall.WallMap[i, j].HP -= TankSprite.tank.bullet.Damage;
+                                    this.wall.CheckStatus();
+                                    if (this.wall.WallMap[i, j].HP <= 0)
+                                    {
+                                        this.wall.WallMap[i, j].IsActive = false;
+                                    }
+                                }
+                            }
                             TankSprite.tank.bullet.CoordX = 2021;
                             TankSprite.tank.bullet.CoordY = 2021;
-                            client.SendInfo(TankSprite.tank);
                             TankSprite.tank.bullet.IsActive = false;
+                            client.SendInfo(TankSprite.tank);
+                            break;
                         }
                     }
                 }
@@ -338,22 +338,22 @@ namespace Client_Graphic
             {
                 case Direction.UP:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - (TankSprite.tank.Speed + TankSprite.TankTexture.Height / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y - (TankSprite.tank.Speed + TankSprite.tank.TankRealHeight / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.DOWN:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + TankSprite.tank.Speed, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + (TankSprite.tank.Speed + TankSprite.tank.TankRealHeight / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.LEFT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.TankTexture.Width / 2), TankSprite.tank.Y - 20, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.tank.TankRealWidth / 2), TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.RIGHT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X + TankSprite.tank.Speed, TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X + (TankSprite.tank.Speed + TankSprite.tank.TankRealWidth / 2), TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 default:
