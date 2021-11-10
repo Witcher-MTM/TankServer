@@ -15,25 +15,27 @@ namespace Client_Graphic
     public class Menu
     {
         public bool IsActive { get; set; }
-        public Button BtnPlay { get; set; }
+        public List<Button> MenuBtns { get; set; }
         public Button BtnSettings { get; set; }
         public Button BtnExit { get; set; }
         public SpriteFont text { get; set; }
         public BtnState State { get; set; }
-        public Menu(Button btn , SpriteFont text)
+        public Menu(Button btn, SpriteFont text)
         {
-            BtnPlay = new Button(new Rectangle(300, 300, 300, 80), btn.Texture);
-            BtnSettings = new Button(new Rectangle(600, 300, 300, 80), btn.Texture);
-            BtnExit = new Button(new Rectangle(900, 300, 300, 80), btn.Texture);
+            MenuBtns = new List<Button>();
+            MenuBtns.Add(new Button(new Rectangle(300, 300, 300, 80), btn.Texture, "Play"));
+            MenuBtns.Add(new Button(new Rectangle(600, 300, 300, 80), btn.Texture, "Settings"));
+            MenuBtns.Add(new Button(new Rectangle(900, 300, 300, 80), btn.Texture, "Exit"));
             this.text = text;
             IsActive = false;
         }
 
         public void Draw(SpriteBatch spritebatch)
         {
-            spritebatch.Draw(BtnPlay.Texture, BtnPlay.Rectangle, BtnPlay.color);
-            spritebatch.Draw(BtnSettings.Texture, BtnSettings.Rectangle, BtnSettings.color);
-            spritebatch.Draw(BtnExit.Texture, BtnExit.Rectangle, BtnExit.color);
+            foreach (var item in MenuBtns)
+            {
+                spritebatch.Draw(item.Texture, item.Rectangle, item.color);
+            }
             spritebatch.DrawString(text, "Play", new Vector2(420, 320), Color.White);
             spritebatch.DrawString(text, "Settings", new Vector2(690, 320), Color.White);
             spritebatch.DrawString(text, "Exit", new Vector2(1020, 320), Color.White);
@@ -42,51 +44,47 @@ namespace Client_Graphic
         }
         public void CathClick()
         {
-            if(IsActive == true)
+            if (IsActive == true)
             {
                 var mouse = Mouse.GetState();
-                if(new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnPlay.Rectangle))
+                foreach (var item in MenuBtns)
                 {
-                    BtnPlay.color = Color.LightGreen;
-                }
-                else
-                {
-                    BtnPlay.color = Color.Black;
-                }
-                if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnSettings.Rectangle))
-                {
-                    BtnSettings.color = Color.LightGreen;
-                }
-                else
-                {
-                    BtnSettings.color = Color.Black;
-                }
-                if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnExit.Rectangle))
-                {
-                    BtnExit.color = Color.LightGreen;
-                }
-                else
-                {
-                    BtnExit.color = Color.Black;
+                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(item.Rectangle))
+                    {
+                        item.color = Color.LightGreen;
+                    }
+                    else
+                    {
+                        item.color = Color.Black;
+                    }
                 }
                 if (mouse.LeftButton == ButtonState.Pressed)
                 {
-                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnPlay.Rectangle))
+                    foreach (var item in MenuBtns)
                     {
-                        State = BtnState.Play;
-                        IsActive = false;
+                        if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(item.Rectangle))
+                        {
+                            if (item.name == "Play")
+                            {
+                                State = BtnState.Play;
+                                IsActive = false;
+                            }
+                            else if (item.name == "Settings")
+                            {
+                                State = BtnState.Settings;
+                            }
+                            else if (item.name == "Exit")
+                            {
+                                State = BtnState.Exit;
+                            }
+                        }
+                       
                     }
-                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnSettings.Rectangle))
-                    {
-                        State = BtnState.Settings;
-                    }
-                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnExit.Rectangle))
-                    {
-                        State = BtnState.Exit;
-                    }
+                   
                 }
+
             }
-            
+
         }
 
     }
