@@ -88,9 +88,9 @@ namespace Client_Graphic
             {
                 TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape) && menu.IsActive == false)
             {
-              menu.IsActive = true;
+                menu.IsActive = true;
             }
             if (TankSprite.tank.IsAlive)
             {
@@ -98,7 +98,6 @@ namespace Client_Graphic
             }
             menu.CathClick();
             SetID();
-            Boost();
             BulletInter();
             BulletMove();
             if (TankSprite.tank.TankRespawn())
@@ -123,18 +122,6 @@ namespace Client_Graphic
             _spriteBatch.End();
             base.Draw(gameTime);
         }
-
-        private void Boost()
-        {
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
-            {
-                TankSprite.tank.Speed = 6;
-            }
-            else
-            {
-                TankSprite.tank.Speed = 3;
-            }
-        }
         private void DrawGame()
         {
             wall.Draw(_spriteBatch);
@@ -150,7 +137,6 @@ namespace Client_Graphic
                     _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 }
             }
-
         }
         private void BulletMove()
         {
@@ -303,7 +289,6 @@ namespace Client_Graphic
                                         this.wall.WallMap[i, j].IsActive = false;
                                     }
                                 }
-                               
                             }
                             TankSprite.tank.bullet.CoordX = 2021;
                             TankSprite.tank.bullet.CoordY = 2021;

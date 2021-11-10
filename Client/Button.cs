@@ -11,7 +11,7 @@ namespace Client_Graphic
     {
         public Rectangle Rectangle { get; set; }
         public Texture2D Texture { get; set; }
-
+        public Color color { get; set; }
         public Button()
         {
 
@@ -20,6 +20,7 @@ namespace Client_Graphic
         {
             this.Rectangle = rec;
             this.Texture = texture;
+            this.color = Color.Black;
         }
     }
 }

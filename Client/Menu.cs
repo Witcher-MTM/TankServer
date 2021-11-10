@@ -31,13 +31,13 @@ namespace Client_Graphic
 
         public void Draw(SpriteBatch spritebatch)
         {
-
-            spritebatch.Draw(BtnPlay.Texture, BtnPlay.Rectangle, Color.Black);
+            spritebatch.Draw(BtnPlay.Texture, BtnPlay.Rectangle, BtnPlay.color);
+            spritebatch.Draw(BtnSettings.Texture, BtnSettings.Rectangle, BtnSettings.color);
+            spritebatch.Draw(BtnExit.Texture, BtnExit.Rectangle, BtnExit.color);
             spritebatch.DrawString(text, "Play", new Vector2(420, 320), Color.White);
-            spritebatch.Draw(BtnSettings.Texture, BtnSettings.Rectangle, Color.Black);
             spritebatch.DrawString(text, "Settings", new Vector2(690, 320), Color.White);
-            spritebatch.Draw(BtnExit.Texture, BtnExit.Rectangle, Color.Black);
             spritebatch.DrawString(text, "Exit", new Vector2(1020, 320), Color.White);
+
 
         }
         public void CathClick()
@@ -45,18 +45,42 @@ namespace Client_Graphic
             if(IsActive == true)
             {
                 var mouse = Mouse.GetState();
+                if(new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnPlay.Rectangle))
+                {
+                    BtnPlay.color = Color.LightGreen;
+                }
+                else
+                {
+                    BtnPlay.color = Color.Black;
+                }
+                if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnSettings.Rectangle))
+                {
+                    BtnSettings.color = Color.LightGreen;
+                }
+                else
+                {
+                    BtnSettings.color = Color.Black;
+                }
+                if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnExit.Rectangle))
+                {
+                    BtnExit.color = Color.LightGreen;
+                }
+                else
+                {
+                    BtnExit.color = Color.Black;
+                }
                 if (mouse.LeftButton == ButtonState.Pressed)
                 {
-                    if (new Rectangle(mouse.X, mouse.Y, 5, 5).Intersects(BtnPlay.Rectangle))
+                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnPlay.Rectangle))
                     {
                         State = BtnState.Play;
                         IsActive = false;
                     }
-                    if (new Rectangle(mouse.X, mouse.Y, 5, 5).Intersects(BtnSettings.Rectangle))
+                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnSettings.Rectangle))
                     {
                         State = BtnState.Settings;
                     }
-                    if (new Rectangle(mouse.X, mouse.Y, 5, 5).Intersects(BtnExit.Rectangle))
+                    if (new Rectangle(mouse.X, mouse.Y, 1, 1).Intersects(BtnExit.Rectangle))
                     {
                         State = BtnState.Exit;
                     }
