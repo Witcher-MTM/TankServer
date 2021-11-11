@@ -344,12 +344,12 @@ namespace Client_Graphic
                     }
                 case Direction.DOWN:
                     {
-                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + (TankSprite.tank.Speed + TankSprite.tank.TankRealHeight / 2), TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y + TankSprite.tank.Speed, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.LEFT:
                     {
-                        tank = new Rectangle(TankSprite.tank.X - (TankSprite.tank.Speed + TankSprite.tank.TankRealWidth / 2), TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
+                        tank = new Rectangle(TankSprite.tank.X - TankSprite.tank.Speed, TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
                         break;
                     }
                 case Direction.RIGHT:
