@@ -289,6 +289,7 @@ namespace Client_Graphic
                                     {
                                         this.wall.WallMap[i, j].IsActive = false;
                                     }
+
                                 }
                             }
                             TankSprite.tank.bullet.CoordX = 2021;
