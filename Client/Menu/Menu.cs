@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using WinFormsApp1;
 namespace Client_Graphic
 {
     public enum BtnState
@@ -27,7 +28,7 @@ namespace Client_Graphic
             MenuBtns.Add(new Button(new Rectangle(600, 300, 300, 80), btn.Texture, "Settings"));
             MenuBtns.Add(new Button(new Rectangle(900, 300, 300, 80), btn.Texture, "Exit"));
             this.text = text;
-            IsActive = false;
+            IsActive = true;
         }
 
         public void Draw(SpriteBatch spritebatch)
@@ -67,7 +68,12 @@ namespace Client_Graphic
                             if (item.name == "Play")
                             {
                                 State = BtnState.Play;
-                                IsActive = false;
+                                LoginForm.StartLogin();
+                                if (LoginForm.IsLogin)
+                                {
+                                    IsActive = false;
+                                }
+
                             }
                             else if (item.name == "Settings")
                             {
