@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationHit.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Tank.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

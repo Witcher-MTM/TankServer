@@ -59,7 +59,7 @@ namespace Client_Graphic
             wall.InitMap();
              _spriteBatch = new SpriteBatch(GraphicsDevice);
             TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), 
-                new Bullet(), Content.Load<SpriteFont>(@"Animation\Text\HitText"));
+                new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
             button = new Button(new Rectangle(100, 100, 300, 80), Content.Load<Texture2D>(@"Texure\MenuTexture\Button"));
@@ -87,8 +87,7 @@ namespace Client_Graphic
             }
             for (int i = 0; i < tanks.Count; i++)
             {
-                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet, 
-                    Content.Load<SpriteFont>(@"Animation\Text\HitText")));
+                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && menu.IsActive == false)
             {
@@ -98,6 +97,7 @@ namespace Client_Graphic
             {
                 TankMove();
             }
+
             menu.CathClick();
             SetID();
             BulletInter();
@@ -137,12 +137,7 @@ namespace Client_Graphic
                 }
                 if (item.tank.bullet.IsActive)
                 {
-                    _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
-                }
-                if (item.tank.TextHit.Draw)
-                {
-                    item.tank.TextHit.Animate();
-                    _spriteBatch.DrawString(item.TextHit, $"-{item.tank.bullet.Damage}", new Vector2(item.tank.TextHit.X, item.tank.TextHit.X), Color.White);
+                    _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 }
             }
         }
@@ -250,19 +245,15 @@ namespace Client_Graphic
         }
         private void BulletInter()
         {
-            bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, 20, 20);
+            bullet_rectangle = new Rectangle(TankSprite.tank.bullet.CoordX, TankSprite.tank.bullet.CoordY, TankSprite.tank.bullet.Width, TankSprite.tank.bullet.Height);
             tank = new Rectangle(TankSprite.tank.X, TankSprite.tank.Y, TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight);
             foreach (var item in TankSpriteList)
             {
                 if (TankSprite.tank.TankID != item.tank.TankID)
                 {
-                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
+                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height)))
                     {
                         TankSprite.tank.HP -= item.tank.bullet.Damage;
-                        TankSprite.tank.TextHit.X = TankSprite.tank.X;
-                        TankSprite.tank.TextHit.Y = TankSprite.tank.Y;
-                        TankSprite.tank.TextHit.Draw = true;
-
                         TankSprite.tank.CheckHP();
                         client.SendInfo(TankSprite.tank);
                         break;

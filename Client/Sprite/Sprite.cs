@@ -12,11 +12,9 @@ namespace Client_Graphic
         public Texture2D TankTexture { get; set; }
         public Texture2D BulletTexture { get; set; }
         public Texture2D MapTexture { get; set; }
-        public SpriteFont TextHit { get; set; }
         public Tank tank { get; set; }
-        public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet,SpriteFont TextHit)
+        public Sprite(Texture2D textureT, Tank tank, Texture2D textureB, Bullet bullet)
         {
-            this.TextHit = TextHit;
             this.TankTexture = textureT;
             this.tank = tank;
             this.BulletTexture = textureB;
