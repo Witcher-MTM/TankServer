@@ -4,16 +4,17 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using TankDLL;
-
+using WinFormsApp1;
 
 namespace Client_Graphic
 {
- 
+
 
     public class Game1 : Game
     {
@@ -46,19 +47,29 @@ namespace Client_Graphic
 
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferWidth = 1600;
-            _graphics.PreferredBackBufferHeight = 900;
+            _graphics.PreferredBackBufferWidth = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width;
+            _graphics.PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height;
             _graphics.ApplyChanges();
             client.Connect();
-            base.Initialize();
+
+            Login.StartLogin();
+            if (Login.IsLogin)
+            {
+
+                base.Initialize();
+            }
+            else
+            {
+                Exit();
+            }
         }
 
         protected override void LoadContent()
         {
             wall.map.LoadMap();
             wall.InitMap();
-             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), 
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"),
                 new Bullet());
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
@@ -72,7 +83,10 @@ namespace Client_Graphic
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            {
+                File.WriteAllText(@$"C:\ProgramData\RubickTanks\Users\{Login.UserLogin}.txt", Login.UserDataRegistr.ToString());
                 Exit();
+            }
             if (menu.State == BtnState.Exit)
             {
                 Exit();
@@ -102,7 +116,7 @@ namespace Client_Graphic
             SetID();
             BulletInter();
             BulletMove();
-          
+
             if (TankSprite.tank.TankRespawn())
             {
                 client.SendInfo(TankSprite.tank);
@@ -273,7 +287,7 @@ namespace Client_Graphic
                     }
                 }
             }
-            for (int i = 0; i <this.wall.map.IntMap.GetLength(0); i++)
+            for (int i = 0; i < this.wall.map.IntMap.GetLength(0); i++)
             {
                 for (int j = 0; j < this.wall.map.IntMap.GetLength(1); j++)
                 {
@@ -281,9 +295,9 @@ namespace Client_Graphic
                     {
                         if (bullet_rectangle.Intersects(this.wall.WallMap[i, j].rec))
                         {
-                            if(i!=0 && i != this.wall.map.IntMap.GetLength(0)-1)
+                            if (i != 0 && i != this.wall.map.IntMap.GetLength(0) - 1)
                             {
-                                if(j!=0 && j != this.wall.map.IntMap.GetLength(1)-1)
+                                if (j != 0 && j != this.wall.map.IntMap.GetLength(1) - 1)
                                 {
                                     this.wall.WallMap[i, j].HP -= TankSprite.tank.bullet.Damage;
                                     this.wall.CheckStatus();

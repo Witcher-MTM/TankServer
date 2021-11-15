@@ -25,7 +25,6 @@ namespace WinFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Login.TryLogin = true;
             if (textBox1.Text.Length > 0 && textBox2.Text.Length > 0)
             {
                 user.Login = this.textBox1.Text;
@@ -33,6 +32,14 @@ namespace WinFormsApp1
                 {
                     user = JsonSerializer.Deserialize<User>(File.ReadAllText($"{user.Login}.json"));
                     if (user.Password == ComputeSha256Hash(this.textBox2.Text))
+                    {
+                        MessageBox.Show("Вы успешно вошли!");
+                        Login.IsLogin = true;
+                        Login.UserDataRegistr = user.Registr;
+                        Login.UserLogin = user.Login;
+                        this.Close();
+                    }
+                    else if(user.Password == this.textBox2.Text)
                     {
                         MessageBox.Show("Вы успешно вошли!");
                         Login.IsLogin = true;

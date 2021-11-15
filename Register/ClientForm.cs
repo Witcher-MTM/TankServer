@@ -1,49 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TankDLL;
 
-namespace Client_Graphic
+namespace WinFormsApp1
 {
-    public class Client
+    public class ClientForm
     {
         public int ID;
         public string ipAddr;
         public int port;
         public IPEndPoint iPEndPoint;
         public Socket socket;
-        private string Ip;
-        public Client()
+        public ClientForm()
         {
-            this.ID++;
-            this.ipAddr = "127.0.0.1";
-            this.port = 8000;
-            this.iPEndPoint = new IPEndPoint(IPAddress.Parse(ipAddr), port);
-            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+           
         }
-        public Client(Socket socket)
-        {
-            this.socket = socket;
-        }
-        public void Connect()
-        {
-            socket.Connect(iPEndPoint);
-            this.Ip = socket.RemoteEndPoint.ToString();
-        }
-     
-        public bool SendInfo(Tank tank)
+        public bool SendInfo(User user)
         {
             bool check = false;
             try
             {
                 string json = string.Empty;
-                json = JsonSerializer.Serialize<Tank>(tank);
+                json = JsonSerializer.Serialize<User>(user);
                 socket.Send(Encoding.Unicode.GetBytes(json));
                 check = true;
             }
@@ -68,8 +51,9 @@ namespace Client_Graphic
 
                 } while (socket.Available > 0);
             }
-            catch (Exception) {
-            
+            catch (Exception)
+            {
+
             }
 
             return stringBuilder;

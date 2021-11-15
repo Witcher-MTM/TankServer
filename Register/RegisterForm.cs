@@ -33,19 +33,14 @@ namespace WinFormsApp1
                 }
                 else if (IsValidEmail(this.textBox3.Text))
                 {
+                    user.Email = this.textBox3.Text;
                     user.Password = this.textBox2.Text;
                     SendPassword();
                     user.Password = ComputeSha256Hash(user.Password);
+                    user.Registr = DateTime.Today;
                     string json = JsonSerializer.Serialize<User>(user);
-                    //if (File.Exists($"{user.Login}.json"))
-                    //{
-                    //    //user = JsonSerializer.Deserialize<User>(json);
-                    //    //if (user.Email == this.textBox3.Text)
-                    //    //{
-                    //    //    MessageBox.Show("Такая почта уже существует!");
-                    //    //}
-                    //}
                     File.WriteAllText($"{user.Login}.json", json);
+                   
                     this.Close();
                 }
                 else
