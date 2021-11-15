@@ -27,14 +27,13 @@ namespace WinFormsApp1
             if (textBox1.Text.Length > 0 && textBox2.Text.Length > 0 && textBox3.Text.Length > 0)
             {
                 user.Login = this.textBox1.Text;
-                user.Password = this.textBox2.Text;
-                user.Email = this.textBox3.Text;
                 if (File.Exists($"{user.Login}.json"))
                 {
                     MessageBox.Show("Такой логин уже существует!");
                 }
-                else
+                else if (IsValidEmail(this.textBox3.Text))
                 {
+                    user.Password = this.textBox2.Text;
                     SendPassword();
                     user.Password = ComputeSha256Hash(user.Password);
                     string json = JsonSerializer.Serialize<User>(user);
@@ -48,6 +47,10 @@ namespace WinFormsApp1
                     //}
                     File.WriteAllText($"{user.Login}.json", json);
                     this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Incorrect email");
                 }
             }
             else
@@ -93,6 +96,18 @@ namespace WinFormsApp1
             smtp.Credentials = new NetworkCredential(mail.Email, mail.Pass);
             smtp.EnableSsl = true;
             smtp.Send(m);
+        }
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
