@@ -27,6 +27,7 @@ namespace TankDLL
 
         public int CD_Respawn { get; set; }
         public Bullet bullet { get; set; }
+        public AnimationHit TextHit { get; set; }
         public Direction tankDirection { get; set; }
         public int TankRealWidth { get; set; }
         public int TankRealHeight { get; set; }
@@ -35,6 +36,7 @@ namespace TankDLL
             Random r = new Random();
             HP = 100;
             bullet = new Bullet();
+            TextHit = new AnimationHit();
             X = 300;
             Y = 300;
             Speed = 3;

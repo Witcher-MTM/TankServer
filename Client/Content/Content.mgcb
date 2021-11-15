@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:../../../../../Downloads/Button.png;Texure/MenuTexture/Button.png
 
+#begin Animation/Text/HitText.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Animation/Text/HitText.spritefont
+
 #begin LabelInfo/TankHP.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

@@ -58,7 +58,8 @@ namespace Client_Graphic
             wall.map.LoadMap();
             wall.InitMap();
              _spriteBatch = new SpriteBatch(GraphicsDevice);
-            TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), new Bullet());
+            TankSprite = new Sprite(Content.Load<Texture2D>(@"Texure\tank"), new Tank(), Content.Load<Texture2D>(@"Texure\bullet"), 
+                new Bullet(), Content.Load<SpriteFont>(@"Animation\Text\HitText"));
             tankHP = Content.Load<SpriteFont>(@"LabelInfo\TankHP");
             wall.wallTexture = Content.Load<Texture2D>(@"Texure\wall");
             button = new Button(new Rectangle(100, 100, 300, 80), Content.Load<Texture2D>(@"Texure\MenuTexture\Button"));
@@ -86,7 +87,8 @@ namespace Client_Graphic
             }
             for (int i = 0; i < tanks.Count; i++)
             {
-                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet));
+                TankSpriteList.Add(new Sprite(Content.Load<Texture2D>(@"Texure\tank"), tanks[i], Content.Load<Texture2D>(@"Texure\bullet"), tanks[i].bullet, 
+                    Content.Load<SpriteFont>(@"Animation\Text\HitText")));
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Escape) && menu.IsActive == false)
             {
@@ -100,6 +102,7 @@ namespace Client_Graphic
             SetID();
             BulletInter();
             BulletMove();
+          
             if (TankSprite.tank.TankRespawn())
             {
                 client.SendInfo(TankSprite.tank);
@@ -130,11 +133,16 @@ namespace Client_Graphic
                 if (item.tank.IsAlive)
                 {
                     _spriteBatch.Draw(item.TankTexture, new Rectangle(item.tank.X, item.tank.Y, item.TankTexture.Width, item.TankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(TankSprite.tank.TankRealWidth, TankSprite.tank.TankRealHeight), SpriteEffects.None, 0f);
-                    _spriteBatch.DrawString(tankHP, $"{TankSprite.tank.HP}", new Vector2(TankSprite.tank.X - 20, TankSprite.tank.Y + 25), Color.White);
+                    _spriteBatch.DrawString(tankHP, $"{item.tank.HP}", new Vector2(item.tank.X - 20, item.tank.Y + 25), Color.White);
                 }
                 if (item.tank.bullet.IsActive)
                 {
                     _spriteBatch.Draw(item.BulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.BulletTexture.Width / 2f, item.BulletTexture.Height / 2f), SpriteEffects.None, 0f);
+                }
+                if (item.tank.TextHit.Draw)
+                {
+                    item.tank.TextHit.Animate();
+                    _spriteBatch.DrawString(item.TextHit, $"-{item.tank.bullet.Damage}", new Vector2(item.tank.TextHit.X, item.tank.TextHit.X), Color.White);
                 }
             }
         }
@@ -251,6 +259,9 @@ namespace Client_Graphic
                     if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
                     {
                         TankSprite.tank.HP -= item.tank.bullet.Damage;
+                        TankSprite.tank.TextHit.X = TankSprite.tank.X;
+                        TankSprite.tank.TextHit.Y = TankSprite.tank.Y;
+                        TankSprite.tank.TextHit.Draw = true;
 
                         TankSprite.tank.CheckHP();
                         client.SendInfo(TankSprite.tank);

@@ -28,7 +28,7 @@ namespace Client_Graphic
             MenuBtns.Add(new Button(new Rectangle(600, 300, 300, 80), btn.Texture, "Settings"));
             MenuBtns.Add(new Button(new Rectangle(900, 300, 300, 80), btn.Texture, "Exit"));
             this.text = text;
-            IsActive = true;
+            IsActive = false;
         }
 
         public void Draw(SpriteBatch spritebatch)
