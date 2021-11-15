@@ -35,7 +35,7 @@ namespace TankDLL
             Random r = new Random();
             HP = 100;
             bullet = new Bullet();
-            X = 300;
+          X = 300;
             Y = 300;
             Speed = 3;
             Color = new int[] { r.Next(50, 256), r.Next(50, 256), r.Next(50, 256) };

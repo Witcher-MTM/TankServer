@@ -12,6 +12,8 @@ namespace TankDLL
         public int Speed { get; set; }
         public int CoordX { get; set; }
         public int CoordY { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
         public float Rotation { get; set; }
         public int CD { get; set; }
         public Direction bulletDirection { get; set; }
@@ -23,6 +25,8 @@ namespace TankDLL
             this.CoordX = -10;
             this.CoordY = -10;
             this.Rotation = 0;
+            this.Width = 20;
+            this.Height = 20;
             this.IsActive = false;
             this.CD = 0;
         }
