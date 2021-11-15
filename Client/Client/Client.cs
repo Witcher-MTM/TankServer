@@ -35,6 +35,7 @@ namespace Client_Graphic
             socket.Connect(iPEndPoint);
             this.Ip = socket.RemoteEndPoint.ToString();
         }
+       
         public bool SendInfo(Tank tank)
         {
             bool check = false;

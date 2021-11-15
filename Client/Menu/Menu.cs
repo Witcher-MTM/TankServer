@@ -68,12 +68,7 @@ namespace Client_Graphic
                             if (item.name == "Play")
                             {
                                 State = BtnState.Play;
-                                LoginForm.StartLogin();
-                                if (LoginForm.IsLogin)
-                                {
-                                    IsActive = false;
-                                }
-
+                                IsActive = false;
                             }
                             else if (item.name == "Settings")
                             {
