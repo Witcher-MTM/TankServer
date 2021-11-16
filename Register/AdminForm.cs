@@ -77,6 +77,7 @@ namespace WinFormsApp1
             this.ListMms.Items.Clear();
             this.BodySms.Clear();
             this.dataSms.Clear();
+
             if (dataFilter)
             {
                 dataFilter = false;
