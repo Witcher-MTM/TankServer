@@ -86,5 +86,13 @@ namespace WinFormsApp1
                 return builder.ToString();
             }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            AdminForm admin = new AdminForm();
+            this.Hide();
+            admin.ShowDialog();
+            this.Show();
+        }
     }
 }
